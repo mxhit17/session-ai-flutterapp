@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:session.ai/core/auth/auth_notifier.dart';
+import 'package:session.ai/features/speaker/presentation/my_sessions_view.dart';
 
 class SpeakerNav extends ConsumerStatefulWidget {
   const SpeakerNav({super.key});
@@ -16,7 +17,7 @@ class _SpeakerNavState extends ConsumerState<SpeakerNav> {
 
   final screens = const [
     Center(child: Text("Speaker Dashboard")),
-    Center(child: Text("My Sessions")),
+    MySessionsScreen(),
     Center(child: Text("Profile")),
   ];
 
@@ -25,6 +26,7 @@ class _SpeakerNavState extends ConsumerState<SpeakerNav> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Speaker"),
+
         actions: [
           IconButton(
             icon: const Icon(Icons.switch_account),

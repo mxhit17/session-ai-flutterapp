@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:session.ai/core/auth/auth_notifier.dart';
 import 'package:session.ai/features/auth/presentation/sign_in_view.dart';
 import 'package:session.ai/features/role_selection/role_selection_view.dart';
-import 'package:session.ai/features/speaker/speaker_dashboard.dart';
+import 'package:session.ai/features/speaker/presentation/speaker_dashboard.dart';
 
 class AppShell extends ConsumerWidget {
   const AppShell({super.key});
