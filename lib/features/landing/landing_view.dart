@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:session.ai/core/widgets/app_sign_in_button.dart';
 import 'package:session.ai/features/auth/presentation/sign_in_view.dart';
-import 'package:session.ai/features/events/presentation/events_list_view.dart';
+import 'package:session.ai/features/events/presentation/events_list_public_view.dart';
 
 class LandingPage extends StatelessWidget {
   const LandingPage({super.key});

@@ -3,8 +3,6 @@ import 'package:session.ai/injection_container.dart';
 import 'package:session.ai/utils/storage/preference_manager.dart';
 import 'auth_state.dart';
 
-// auth_notifier.dart
-
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier();
 });
@@ -18,22 +16,6 @@ class AuthNotifier extends StateNotifier<AuthState> {
     await loadFromStorage();
   }
 
-  // Future<void> loadFromStorage() async {
-  //   final prefs = sl<PreferencesManager>();
-  //   final token = prefs.getAccessToken();
-  //   final rolesJson = prefs.getUserRoles();
-  //   final activeRole = prefs.getActiveRole();
-
-  //   if (token != null && rolesJson != null) {
-  //     final roles = rolesJson;
-
-  //     state = AuthState(
-  //       token: token,
-  //       roles: roles,
-  //       activeRole: activeRole ?? (roles.length == 1 ? roles.first : null),
-  //     );
-  //   }
-  // }
   Future<void> loadFromStorage() async {
     final prefs = sl<PreferencesManager>();
 
@@ -93,29 +75,3 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = AuthState.initial();
   }
 }
-
-// final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
-//   return AuthNotifier();
-// });
-
-// class AuthNotifier extends StateNotifier<AuthState> {
-//   AuthNotifier() : super(const AuthState());
-
-//   void login({required String token, required List<String> roles}) {
-//     state = AuthState(
-//       token: token,
-//       roles: roles,
-//       activeRole: roles.length == 1 ? roles.first : null,
-//     );
-//   }
-
-//   void switchRole(String role) {
-//     if (state.roles.contains(role)) {
-//       state = state.copyWith(activeRole: role);
-//     }
-//   }
-
-//   void logout() {
-//     state = const AuthState();
-//   }
-// }

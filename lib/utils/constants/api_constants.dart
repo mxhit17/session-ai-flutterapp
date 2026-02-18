@@ -7,4 +7,5 @@ class ApiConstants {
   static const String register = "${auth}register";
   static const String mySessions = "speaker/sessions";
   static const String speakerProfile = "speaker/profile";
+  static const String submitSession = "api/sessions";
 }

@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:session.ai/core/widgets/app_sign_in_button.dart';
 import 'package:session.ai/features/auth/presentation/sign_in_view.dart';
 import 'package:session.ai/features/events/data/events_repository.dart';
-import 'package:session.ai/features/events/presentation/event_details_view.dart';
+import 'package:session.ai/features/events/presentation/event_details_public_view.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
 
 class EventsListPage extends StatelessWidget {
@@ -143,62 +143,6 @@ class _EventsGridState extends State<EventsGrid> {
     );
   }
 }
-
-// class EventsGrid extends StatelessWidget {
-//   const EventsGrid({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final events = [
-//       {
-//         "title": "AI Tech Conference 2026",
-//         "description": "Exploring AI, LLMs and scalable systems.",
-//         "location": "Bangalore",
-//         "date": "12–14 Mar 2026",
-//       },
-//       {
-//         "title": "Flutter Dev Summit",
-//         "description": "Deep dive into Flutter and cross-platform apps.",
-//         "location": "Delhi",
-//         "date": "05–06 Apr 2026",
-//       },
-//       {
-//         "title": "Cloud & DevOps Expo",
-//         "description": "Scaling infrastructure and microservices.",
-//         "location": "Mumbai",
-//         "date": "18–20 May 2026",
-//       },
-//     ];
-
-//     return LayoutBuilder(
-//       builder: (context, constraints) {
-//         int crossAxisCount = 1;
-
-//         if (constraints.maxWidth > 1200) {
-//           crossAxisCount = 3;
-//         } else if (constraints.maxWidth > 800) {
-//           crossAxisCount = 2;
-//         }
-
-//         return MasonryGridView.count(
-//           crossAxisCount: crossAxisCount,
-//           mainAxisSpacing: 24,
-//           crossAxisSpacing: 24,
-//           itemCount: events.length,
-//           itemBuilder: (context, index) {
-//             final event = events[index];
-//             return EventCard(
-//               title: event["title"]!,
-//               description: event["description"]!,
-//               location: event["location"]!,
-//               date: event["date"]!,
-//             );
-//           },
-//         );
-//       },
-//     );
-//   }
-// }
 
 class EventCard extends StatelessWidget {
   final String title;
