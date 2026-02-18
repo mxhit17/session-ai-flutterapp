@@ -41,7 +41,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     final roles = prefs.getUserRoles();
     final activeRole = prefs.getActiveRole();
 
-    // 🔥 CRITICAL FIX
+    // CRITICAL FIX
     // If already logged in during this session, don't overwrite state
     if (state.token != null) return;
 

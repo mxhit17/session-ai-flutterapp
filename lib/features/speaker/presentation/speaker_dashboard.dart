@@ -1,9 +1,8 @@
-// speaker_nav.dart
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:session.ai/core/auth/auth_notifier.dart';
 import 'package:session.ai/features/speaker/presentation/my_sessions_view.dart';
+import 'package:session.ai/features/speaker/presentation/speaker_profile_view.dart';
 
 class SpeakerNav extends ConsumerStatefulWidget {
   const SpeakerNav({super.key});
@@ -18,7 +17,7 @@ class _SpeakerNavState extends ConsumerState<SpeakerNav> {
   final screens = const [
     Center(child: Text("Speaker Dashboard")),
     MySessionsScreen(),
-    Center(child: Text("Profile")),
+    SpeakerProfileScreen(),
   ];
 
   @override

@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:session.ai/features/create_event/presentation/create_event_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PreferencesManager {
@@ -95,40 +92,5 @@ class PreferencesManager {
 
   Future<void> clearAll() async {
     await _prefs.clear();
-  }
-}
-
-class EventStorage {
-  static const _EVENT_LIST_KEY = "local_events";
-  static const _APPLIED_EVENTS_KEY = "applied_events";
-
-  // ---------------- All events ----------------
-  static Future<void> saveEvents(List<EventModel> events) async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonList = events.map((e) => e.toJson()).toList();
-    await prefs.setString(_EVENT_LIST_KEY, jsonEncode(jsonList));
-  }
-
-  static Future<List<EventModel>> loadEvents() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_EVENT_LIST_KEY);
-    if (jsonString == null) return [];
-    final List decoded = jsonDecode(jsonString);
-    return decoded.map((e) => EventModel.fromJson(e)).toList();
-  }
-
-  // ---------------- Applied events ----------------
-  static Future<void> saveAppliedEvents(List<EventModel> events) async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonList = events.map((e) => e.toJson()).toList();
-    await prefs.setString(_APPLIED_EVENTS_KEY, jsonEncode(jsonList));
-  }
-
-  static Future<List<EventModel>> loadAppliedEvents() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString(_APPLIED_EVENTS_KEY);
-    if (jsonString == null) return [];
-    final List decoded = jsonDecode(jsonString);
-    return decoded.map((e) => EventModel.fromJson(e)).toList();
   }
 }

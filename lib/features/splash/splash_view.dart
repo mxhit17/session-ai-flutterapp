@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:session.ai/features/landing/landing_view.dart';
-import 'package:session.ai/injection_container.dart';
-import 'package:session.ai/utils/storage/preference_manager.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +13,6 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
-  final _prefs = sl<PreferencesManager>();
 
   @override
   void initState() {
@@ -37,36 +34,6 @@ class _SplashScreenState extends State<SplashScreen>
   void _navigate() async {
     // Wait for splash duration
     await Future.delayed(const Duration(milliseconds: 700));
-
-    // Get access token from PreferencesManager
-    // final String? token = await _prefs.getAccessToken();
-    // final String? role = await _prefs.getUserRoles().first;
-
-    // Navigate based on token availability
-    // if (token != null && token.isNotEmpty) {
-    //   // Check user role and navigate accordingly
-    //   if (role?.toLowerCase() == 'organiser') {
-    //     Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(builder: (_) => const BottomNavBarOrganizer()),
-    //     );
-    //   } else if (role?.toLowerCase() == 'speaker') {
-    //     Navigator.pushReplacement(
-    //       context,
-    //       MaterialPageRoute(builder: (_) => const BottomNavBarSpeaker()),
-    //     );
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       const SnackBar(
-    //         content: Text("Unknown role. Please contact support."),
-    //       ),
-    //     );
-    //   }
-    // } else {
-    // Navigator.pushReplacement(
-    //   context,
-    //   MaterialPageRoute(builder: (_) => const SignInScreen()),
-    // );
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => const LandingPage()),
