@@ -8,4 +8,5 @@ class ApiConstants {
   static const String mySessions = "speaker/sessions";
   static const String speakerProfile = "speaker/profile";
   static const String submitSession = "api/sessions";
+  static const String createEvent = "api/events";
 }

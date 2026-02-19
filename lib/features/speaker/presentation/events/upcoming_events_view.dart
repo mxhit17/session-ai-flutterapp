@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:session.ai/features/events/data/events_repository.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
+import 'package:session.ai/features/speaker/presentation/events/create_event_view.dart';
 import 'package:session.ai/features/speaker/presentation/events/event_detail_view.dart';
 
 class UpcomingEventsScreen extends StatefulWidget {
@@ -30,6 +31,19 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CreateEventScreen()),
+          );
+
+          // Refresh after coming back (in case event was created)
+          _refresh();
+        },
+        icon: const Icon(Icons.add),
+        label: const Text("Create Event"),
+      ),
       body: FutureBuilder<AllEventsList>(
         future: _eventsFuture,
         builder: (context, snapshot) {

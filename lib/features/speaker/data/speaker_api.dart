@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:session.ai/core/events/models/create_event_response.dart';
 import 'package:session.ai/features/speaker/data/speaker_repository.dart';
 import 'package:session.ai/features/speaker/models/get_speaker_profile_response.dart';
 import 'package:session.ai/features/speaker/models/my_sessions_response.dart';
@@ -36,6 +37,12 @@ class SpeakerApi {
     );
 
     return UpdateSpeakerProfile.fromJson(response.data);
+  }
+
+  Future<CreateEventResponse> createEvent(Map<String, dynamic> body) async {
+    final response = await _client.post(ApiConstants.createEvent, data: body);
+
+    return CreateEventResponse.fromJson(response.data);
   }
 }
 
