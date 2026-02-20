@@ -16,7 +16,6 @@ class _SpeakerNavState extends ConsumerState<SpeakerNav> {
   int index = 0;
 
   final screens = const [
-    // Center(child: Text("Speaker Dashboard")),
     UpcomingEventsScreen(),
     MySessionsScreen(),
     SpeakerProfileScreen(),

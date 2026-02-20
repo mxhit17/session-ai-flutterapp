@@ -9,4 +9,5 @@ class ApiConstants {
   static const String speakerProfile = "speaker/profile";
   static const String submitSession = "api/sessions";
   static const String createEvent = "api/events";
+  static const String getMyEventsOrganiser = "api/events/my-events";
 }

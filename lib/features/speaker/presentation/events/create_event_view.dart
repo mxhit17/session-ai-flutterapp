@@ -81,13 +81,13 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
       List<String> roles = prefs.getUserRoles();
 
-      if (!roles.contains("ORGANISER")) {
-        roles.add("ORGANISER");
+      if (!roles.contains("ORGANIZER")) {
+        roles.add("ORGANIZER");
 
         await prefs.setUserRoles(roles);
 
         // Optional: make ORGANISER active role
-        await prefs.setActiveRole("ORGANISER");
+        await prefs.setActiveRole("ORGANIZER");
       }
 
       ScaffoldMessenger.of(context).showSnackBar(
