@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:session.ai/core/events/models/get_events_response.dart';
+import 'package:session.ai/features/organiser/data/organiser_repository.dart';
 import 'package:session.ai/features/speaker/data/speaker_repository.dart';
-import 'package:session.ai/injection_container.dart';
-import 'package:session.ai/utils/storage/preference_manager.dart';
 
 class CreateEventScreen extends StatefulWidget {
-  const CreateEventScreen({super.key});
+  final GetEventsResponse? existingEvent;
 
+  const CreateEventScreen({super.key, this.existingEvent});
   @override
   State<CreateEventScreen> createState() => _CreateEventScreenState();
 }
@@ -18,11 +19,30 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _locationController = TextEditingController();
 
-  final SpeakerRepository _repository = SpeakerRepository();
+  final SpeakerRepository _speakerRepository = SpeakerRepository();
+  final OrganiserRepository _organiserRepository = OrganiserRepository();
   bool _isLoading = false;
 
   DateTimeRange? _selectedDateRange;
   String _selectedTimezone = "Asia/Kolkata";
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.existingEvent != null) {
+      final event = widget.existingEvent!;
+
+      _titleController.text = event.title;
+      _descriptionController.text = event.description;
+      _locationController.text = event.location;
+
+      _selectedDateRange = DateTimeRange(
+        start: event.startDate,
+        end: event.endDate,
+      );
+    }
+  }
 
   final List<String> _timezones = [
     "Asia/Kolkata",
@@ -50,6 +70,58 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     }
   }
 
+  // Future<void> _submit() async {
+  //   if (!_formKey.currentState!.validate()) return;
+  //   if (_selectedDateRange == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Please select event date range")),
+  //     );
+  //     return;
+  //   }
+  //   final eventMap = {
+  //     "title": _titleController.text.trim(),
+  //     "description": _descriptionController.text.trim(),
+  //     "start_date": formatDate(_selectedDateRange!.start),
+  //     "end_date": formatDate(_selectedDateRange!.end),
+  //     "location": _locationController.text.trim(),
+  //     "timezone": _selectedTimezone,
+  //   };
+  //   try {
+  //     setState(() => _isLoading = true);
+  //     final response = await _repository.createEvent(eventMap);
+  //     if (!mounted) return;
+  //     // ROLE CHECK LOGIC
+  //     final prefs = sl<PreferencesManager>();
+  //     // List<String> roles = prefs.getUserRoles();
+  //     // if (!roles.contains("ORGANIZER")) {
+  //     //   roles.add("ORGANIZER");
+  //     //   await prefs.setUserRoles(roles);
+  //     //   // Optional: make ORGANISER active role
+  //     //   await prefs.setActiveRole("ORGANIZER");
+  //     // }
+  //     if (response.token != null) {
+  //       List<String> roles = prefs.getUserRoles();
+  //       if (!roles.contains("ORGANIZER")) {
+  //         roles.add("ORGANIZER");
+  //         await prefs.setUserRoles(roles);
+  //       }
+  //     }
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Event Created Successfully 🎉")),
+  //     );
+  //     Navigator.pop(context, response);
+  //   } catch (e) {
+  //     if (!mounted) return;
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text(e.toString())));
+  //   } finally {
+  //     if (mounted) {
+  //       setState(() => _isLoading = false);
+  //     }
+  //   }
+  // }
+
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -72,29 +144,28 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     try {
       setState(() => _isLoading = true);
 
-      final response = await _repository.createEvent(eventMap);
+      if (widget.existingEvent == null) {
+        await _speakerRepository.createEvent(eventMap);
+      } else {
+        await _organiserRepository.updateEvent(
+          widget.existingEvent!.id,
+          eventMap,
+        );
+      }
 
       if (!mounted) return;
 
-      // 🔥 ROLE CHECK LOGIC
-      final prefs = sl<PreferencesManager>();
-
-      List<String> roles = prefs.getUserRoles();
-
-      if (!roles.contains("ORGANIZER")) {
-        roles.add("ORGANIZER");
-
-        await prefs.setUserRoles(roles);
-
-        // Optional: make ORGANISER active role
-        await prefs.setActiveRole("ORGANIZER");
-      }
-
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Event Created Successfully 🎉")),
+        SnackBar(
+          content: Text(
+            widget.existingEvent == null
+                ? "Event Created Successfully 🎉"
+                : "Event Updated Successfully 🎉",
+          ),
+        ),
       );
 
-      Navigator.pop(context, response);
+      Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
 
@@ -102,16 +173,18 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         context,
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Create Event")),
+      appBar: AppBar(
+        title: Text(
+          widget.existingEvent == null ? "Create Event" : "Edit Event",
+        ),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -224,7 +297,9 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                               color: Colors.white,
                             ),
                           )
-                          : const Text("Create Event"),
+                          : widget.existingEvent == null
+                          ? Text("Create Event")
+                          : Text("Edit Event"),
                 ),
               ),
             ],

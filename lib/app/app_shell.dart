@@ -26,6 +26,8 @@ class AppShell extends ConsumerWidget {
     switch (auth.activeRole) {
       case "SPEAKER":
         return const SpeakerNav();
+      case "ORGANIZER":
+        return const OrganizerNav();
       case "ORGANISER":
         return const OrganizerNav();
       case "REVIEWER":

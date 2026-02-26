@@ -1,24 +1,42 @@
 class CreateEventResponse {
+  final Event event;
+  final String? token; // Nullable as requested
+
+  CreateEventResponse({required this.event, this.token});
+
+  factory CreateEventResponse.fromJson(Map<String, dynamic> json) {
+    return CreateEventResponse(
+      event: Event.fromJson(json['event']),
+      token: json['token'], // can be null
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'event': event.toJson(), 'token': token};
+  }
+}
+
+class Event {
   final String id;
   final String title;
-  final String? description;
+  final String description;
   final DateTime startDate;
   final DateTime endDate;
-  final String? location;
+  final String location;
   final String timezone;
   final bool isPublic;
   final String createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final DateTime? deletedAt;
+  final DateTime? deletedAt; // nullable
 
-  CreateEventResponse({
+  Event({
     required this.id,
     required this.title,
-    this.description,
+    required this.description,
     required this.startDate,
     required this.endDate,
-    this.location,
+    required this.location,
     required this.timezone,
     required this.isPublic,
     required this.createdBy,
@@ -27,8 +45,8 @@ class CreateEventResponse {
     this.deletedAt,
   });
 
-  factory CreateEventResponse.fromJson(Map<String, dynamic> json) {
-    return CreateEventResponse(
+  factory Event.fromJson(Map<String, dynamic> json) {
+    return Event(
       id: json['id'],
       title: json['title'],
       description: json['description'],
@@ -49,19 +67,18 @@ class CreateEventResponse {
 
   Map<String, dynamic> toJson() {
     return {
-      "id": id,
-      "title": title,
-      "description": description,
-      "start_date": startDate.toUtc().toIso8601String(),
-      "end_date": endDate.toUtc().toIso8601String(),
-      "location": location,
-      "timezone": timezone,
-      "is_public": isPublic,
-      "created_by": createdBy,
-      "created_at": createdAt.toUtc().toIso8601String(),
-      "updated_at": updatedAt.toUtc().toIso8601String(),
-      "deleted_at":
-          deletedAt != null ? deletedAt!.toUtc().toIso8601String() : null,
+      'id': id,
+      'title': title,
+      'description': description,
+      'start_date': startDate.toIso8601String(),
+      'end_date': endDate.toIso8601String(),
+      'location': location,
+      'timezone': timezone,
+      'is_public': isPublic,
+      'created_by': createdBy,
+      'created_at': createdAt.toIso8601String(),
+      'updated_at': updatedAt.toIso8601String(),
+      'deleted_at': deletedAt?.toIso8601String(),
     };
   }
 }

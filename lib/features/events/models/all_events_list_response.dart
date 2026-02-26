@@ -21,6 +21,9 @@ class Event {
   final String location;
   final String timezone;
   final DateTime createdAt;
+  final bool cfpOpen;
+  final DateTime? cfpStart;
+  final DateTime? cfpEnd;
 
   Event({
     required this.id,
@@ -31,18 +34,25 @@ class Event {
     required this.location,
     required this.timezone,
     required this.createdAt,
+    required this.cfpOpen,
+    this.cfpStart,
+    this.cfpEnd,
   });
 
   factory Event.fromJson(Map<String, dynamic> json) {
     return Event(
       id: json['id'],
       title: json['title'],
-      description: json['description'],
+      description: json['description'] ?? '',
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
-      location: json['location'],
+      location: json['location'] ?? '',
       timezone: json['timezone'],
       createdAt: DateTime.parse(json['created_at']),
+      cfpOpen: json['cfp_open'] ?? false,
+      cfpStart:
+          json['cfp_start'] != null ? DateTime.parse(json['cfp_start']) : null,
+      cfpEnd: json['cfp_end'] != null ? DateTime.parse(json['cfp_end']) : null,
     );
   }
 
@@ -56,6 +66,9 @@ class Event {
       'location': location,
       'timezone': timezone,
       'created_at': createdAt.toIso8601String(),
+      'cfp_open': cfpOpen,
+      'cfp_start': cfpStart?.toIso8601String(),
+      'cfp_end': cfpEnd?.toIso8601String(),
     };
   }
 }

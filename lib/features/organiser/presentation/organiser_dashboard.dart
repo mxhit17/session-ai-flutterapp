@@ -37,6 +37,7 @@ class _OrganizerNavState extends ConsumerState<OrganizerNav> {
           ),
         ],
       ),
+
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
