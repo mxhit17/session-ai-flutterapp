@@ -8,6 +8,7 @@ class ApiConstants {
   static const String mySessions = "speaker/sessions";
   static const String speakerProfile = "speaker/profile";
   static const String submitSession = "api/sessions";
+  static const String searchUsers = "users";
 
   // events
   static const String createEvent = "api/events";
@@ -30,4 +31,22 @@ class ApiConstants {
   static String getSingleRoom(String roomId) => "rooms/$roomId";
   static String updateRoom(String roomId) => "rooms/$roomId";
   static String deleteRoom(String roomId) => "rooms/$roomId";
+
+  // ----------
+  // cfp
+  // ----------
+  static String handleCFP(String eventId) => "events/$eventId/cfp";
+
+  // reviewer pool
+  static String getReviewerPool(String eventId) => "events/$eventId/reviewers";
+  static String addReviewer(String eventId) => "events/$eventId/reviewers";
+  static String removeReviewer(String eventId, String reviewerId) =>
+      "events/$eventId/reviewers/$reviewerId";
+
+  // reviewer module
+  static const String reviewerBase = "reviewer";
+
+  static const String reviewerSessions = "$reviewerBase/sessions";
+
+  static const String reviewerDashboardStats = "$reviewerBase/dashboard/stats";
 }

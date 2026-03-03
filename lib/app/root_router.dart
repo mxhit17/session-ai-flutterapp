@@ -32,28 +32,3 @@ class RootRouter extends ConsumerWidget {
     return const AppShell();
   }
 }
-
-// class RootRouter extends ConsumerWidget {
-//   const RootRouter({super.key});
-
-//   @override
-//   Widget build(BuildContext context, WidgetRef ref) {
-//     final auth = ref.watch(authProvider);
-//     print("RootRouter rebuild");
-//     print(auth.token);
-//     print(identityHashCode(ref.read(authProvider.notifier)));
-
-//     // If still loading from SharedPreferences
-//     if (auth.token == null && auth.roles.isEmpty) {
-//       return const SplashScreen();
-//     }
-
-//     // If not logged in → show public module
-//     if (!auth.isLoggedIn) {
-//       return const LandingPage();
-//     }
-
-//     // If logged in → show private module
-//     return const AppShell();
-//   }
-// }

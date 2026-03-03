@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:session.ai/core/events/models/get_events_response.dart';
-import 'package:session.ai/features/events/data/events_repository.dart';
-import 'package:session.ai/features/events/models/all_events_list_response.dart';
 import 'package:session.ai/features/organiser/data/organiser_repository.dart';
 import 'package:session.ai/features/organiser/presentation/organiser_event_details_view.dart';
 import 'package:session.ai/features/speaker/presentation/events/create_event_view.dart';
@@ -83,16 +81,7 @@ class _OrganizerEventsScreenState extends State<OrganizerEventsScreen> {
                   await Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder:
-                          (_) => OrganizerEventDetailScreen(
-                            eventId: event.id,
-                            title: event.title,
-                            startDate: event.startDate,
-                            endDate: event.endDate,
-                            location: event.location,
-                            isCfpOpen:
-                                true, // make sure this exists in model modify this later
-                          ),
+                      builder: (_) => OrganizerEventDetailScreen(event: event),
                     ),
                   );
                 },

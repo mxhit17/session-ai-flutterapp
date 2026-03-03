@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:session.ai/core/events/models/get_events_response.dart';
 import 'package:session.ai/features/organiser/models/all_rooms_response.dart';
 import 'package:session.ai/features/organiser/models/all_tracks_response.dart';
+import 'package:session.ai/features/organiser/models/get_reviewer_pool_response.dart';
+import 'package:session.ai/features/organiser/models/get_user_response.dart';
 import 'package:session.ai/injection_container.dart';
 import 'package:session.ai/utils/constants/api_constants.dart';
 import 'package:session.ai/utils/network/dio_client.dart';
@@ -88,5 +90,42 @@ class OrganiserApi {
   /// 🔹 DELETE ROOM
   Future<void> deleteRoom(String roomId) async {
     await _client.delete(ApiConstants.deleteRoom(roomId));
+  }
+
+  // -----------
+  // Handle CFP (Patch)
+  // -----------
+  Future<void> handleCFP(String eventId, Map<String, dynamic> map) async {
+    await _client.patch(ApiConstants.handleCFP(eventId), data: map);
+  }
+
+  Future<List<GetReviewerPoolResponse>> getReviewerPool(String eventId) async {
+    final response = await _client.get(ApiConstants.getReviewerPool(eventId));
+
+    final List data = response.data;
+
+    return data.map((e) => GetReviewerPoolResponse.fromJson(e)).toList();
+  }
+
+  Future<void> addReviewer(String eventId, String reviewerId) async {
+    await _client.post(
+      ApiConstants.addReviewer(eventId),
+      data: {"reviewer_id": reviewerId},
+    );
+  }
+
+  Future<void> removeReviewer(String eventId, String reviewerId) async {
+    await _client.delete(ApiConstants.removeReviewer(eventId, reviewerId));
+  }
+
+  Future<List<GetUsersModel>> searchUsers(String query) async {
+    final response = await _client.get(
+      ApiConstants.searchUsers,
+      queryParameters: {"search": query},
+    );
+
+    final List data = response.data;
+
+    return data.map((e) => GetUsersModel.fromJson(e)).toList();
   }
 }

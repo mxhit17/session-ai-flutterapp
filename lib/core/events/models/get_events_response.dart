@@ -9,6 +9,10 @@ class GetEventsResponse {
   final bool isPublic;
   final DateTime createdAt;
 
+  final bool cfpOpen;
+  final DateTime? cfpStart;
+  final DateTime? cfpEnd;
+
   GetEventsResponse({
     required this.id,
     required this.title,
@@ -19,6 +23,9 @@ class GetEventsResponse {
     required this.timezone,
     required this.isPublic,
     required this.createdAt,
+    required this.cfpOpen,
+    this.cfpStart,
+    this.cfpEnd,
   });
 
   factory GetEventsResponse.fromJson(Map<String, dynamic> json) {
@@ -32,6 +39,10 @@ class GetEventsResponse {
       timezone: json['timezone'],
       isPublic: json['is_public'],
       createdAt: DateTime.parse(json['created_at']),
+      cfpOpen: json['cfp_open'] ?? false,
+      cfpStart:
+          json['cfp_start'] != null ? DateTime.parse(json['cfp_start']) : null,
+      cfpEnd: json['cfp_end'] != null ? DateTime.parse(json['cfp_end']) : null,
     );
   }
 
@@ -46,6 +57,9 @@ class GetEventsResponse {
       "timezone": timezone,
       "is_public": isPublic,
       "created_at": createdAt.toIso8601String(),
+      'cfp_open': cfpOpen,
+      'cfp_start': cfpStart?.toIso8601String(),
+      'cfp_end': cfpEnd?.toIso8601String(),
     };
   }
 }

@@ -2,6 +2,8 @@ import 'package:session.ai/core/events/models/get_events_response.dart';
 import 'package:session.ai/features/organiser/data/organiser_api.dart';
 import 'package:session.ai/features/organiser/models/all_rooms_response.dart';
 import 'package:session.ai/features/organiser/models/all_tracks_response.dart';
+import 'package:session.ai/features/organiser/models/get_reviewer_pool_response.dart';
+import 'package:session.ai/features/organiser/models/get_user_response.dart';
 
 class OrganiserRepository {
   final OrganiserApi _api = OrganiserApi();
@@ -118,6 +120,50 @@ class OrganiserRepository {
       await _api.deleteRoom(roomId);
     } catch (e) {
       throw Exception("Failed to delete room.");
+    }
+  }
+
+  // -------
+  // handle cfp
+  // -------
+  Future<void> handleCFP(String eventId, Map<String, dynamic> map) async {
+    try {
+      await _api.handleCFP(eventId, map);
+    } catch (e) {
+      throw Exception("Could not modify CFP.");
+    }
+  }
+
+  // Reviewer Pool
+  Future<List<GetReviewerPoolResponse>> getReviewerPool(String eventId) async {
+    try {
+      return await _api.getReviewerPool(eventId);
+    } catch (_) {
+      throw Exception("Failed to fetch reviewers.");
+    }
+  }
+
+  Future<void> addReviewer(String eventId, String reviewerId) async {
+    try {
+      await _api.addReviewer(eventId, reviewerId);
+    } catch (_) {
+      throw Exception("Failed to add reviewer.");
+    }
+  }
+
+  Future<void> removeReviewer(String eventId, String reviewerId) async {
+    try {
+      await _api.removeReviewer(eventId, reviewerId);
+    } catch (_) {
+      throw Exception("Failed to remove reviewer.");
+    }
+  }
+
+  Future<List<GetUsersModel>> searchUsers(String query) async {
+    try {
+      return await _api.searchUsers(query);
+    } catch (_) {
+      throw Exception("Failed to search users.");
     }
   }
 }
