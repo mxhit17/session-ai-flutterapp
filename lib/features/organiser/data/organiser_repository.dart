@@ -4,6 +4,7 @@ import 'package:session.ai/features/organiser/models/all_rooms_response.dart';
 import 'package:session.ai/features/organiser/models/all_tracks_response.dart';
 import 'package:session.ai/features/organiser/models/get_reviewer_pool_response.dart';
 import 'package:session.ai/features/organiser/models/get_user_response.dart';
+import 'package:session.ai/features/organiser/models/reviewed_sessions_response.dart';
 
 class OrganiserRepository {
   final OrganiserApi _api = OrganiserApi();
@@ -164,6 +165,30 @@ class OrganiserRepository {
       return await _api.searchUsers(query);
     } catch (_) {
       throw Exception("Failed to search users.");
+    }
+  }
+
+  // =========================
+  // REVIEWED SESSIONS
+  // =========================
+
+  Future<List<ReviewedSession>> getReviewedSessions(String eventId) async {
+    try {
+      return await _api.getReviewedSessions(eventId);
+    } catch (_) {
+      throw Exception("Failed to fetch reviewed sessions.");
+    }
+  }
+
+  // =========================
+  // SESSION STATUS UPDATE
+  // =========================
+
+  Future<void> updateSessionStatus(String sessionId, String status) async {
+    try {
+      await _api.updateSessionStatus(sessionId, status);
+    } catch (_) {
+      throw Exception("Failed to update session status.");
     }
   }
 }

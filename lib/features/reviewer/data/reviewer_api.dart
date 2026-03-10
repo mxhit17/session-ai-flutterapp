@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:session.ai/features/reviewer/models/get_assigned_session_details.dart';
 import 'package:session.ai/features/reviewer/models/get_assigned_sessions_response.dart';
 import 'package:session.ai/features/reviewer/models/get_final_score_response.dart';
+import 'package:session.ai/features/reviewer/models/get_reviewed_sessions_response.dart';
 import 'package:session.ai/features/reviewer/models/reviewer_dashboard_stats_response.dart';
 import 'package:session.ai/features/reviewer/models/submit_review_response.dart';
 import 'package:session.ai/injection_container.dart';
@@ -12,7 +13,7 @@ class ReviewerApi {
   final Dio _client = sl<DioClient>().instance;
 
   /// 1️⃣ Get Assigned Sessions
-  Future<List<GetAssignedSessionsResponse>> getAssignedSessions({
+  Future<List<ReviewerAssignment>> getAssignedSessions({
     String? eventId,
     String? status,
   }) async {
@@ -25,7 +26,23 @@ class ReviewerApi {
     );
 
     final List data = response.data;
-    return data.map((e) => GetAssignedSessionsResponse.fromJson(e)).toList();
+    return data.map((e) => ReviewerAssignment.fromJson(e)).toList();
+  }
+
+  Future<List<ReviewedSessionModel>> getReviewedSessions({
+    String? eventId,
+    String? status,
+  }) async {
+    final response = await _client.get(
+      ApiConstants.reviewedSessions,
+      // queryParameters: {
+      //   if (eventId != null) 'eventId': eventId,
+      //   if (status != null) 'status': status,
+      // },
+    );
+
+    final List data = response.data;
+    return data.map((e) => ReviewedSessionModel.fromJson(e)).toList();
   }
 
   /// 2️⃣ Get Session Detail

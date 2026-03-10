@@ -135,35 +135,30 @@ class _CfpModifierScreenState extends State<CfpModifierScreen> {
 
             /// DATE RANGE FIELD
             GestureDetector(
-              onTap: _cfpOpen ? _pickDateRange : null,
-              child: Opacity(
-                opacity: _cfpOpen ? 1 : 0.5,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade400),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.date_range),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          (_cfpStart != null && _cfpEnd != null)
-                              ? "${dateFormat.format(_cfpStart!)}  →  ${dateFormat.format(_cfpEnd!)}"
-                              : "Select CFP Date Range",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color:
-                                (_cfpStart != null)
-                                    ? Colors.black
-                                    : Colors.grey,
-                          ),
+              onTap: _pickDateRange,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.grey.shade400),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.date_range),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        (_cfpStart != null && _cfpEnd != null)
+                            ? "${dateFormat.format(_cfpStart!)}  →  ${dateFormat.format(_cfpEnd!)}"
+                            : "Select CFP Date Range",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color:
+                              (_cfpStart != null) ? Colors.black : Colors.grey,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),

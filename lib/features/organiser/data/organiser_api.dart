@@ -4,6 +4,7 @@ import 'package:session.ai/features/organiser/models/all_rooms_response.dart';
 import 'package:session.ai/features/organiser/models/all_tracks_response.dart';
 import 'package:session.ai/features/organiser/models/get_reviewer_pool_response.dart';
 import 'package:session.ai/features/organiser/models/get_user_response.dart';
+import 'package:session.ai/features/organiser/models/reviewed_sessions_response.dart';
 import 'package:session.ai/injection_container.dart';
 import 'package:session.ai/utils/constants/api_constants.dart';
 import 'package:session.ai/utils/network/dio_client.dart';
@@ -127,5 +128,30 @@ class OrganiserApi {
     final List data = response.data;
 
     return data.map((e) => GetUsersModel.fromJson(e)).toList();
+  }
+
+  // =========================
+  // REVIEWED SESSIONS
+  // =========================
+
+  Future<List<ReviewedSession>> getReviewedSessions(String eventId) async {
+    final response = await _client.get(
+      ApiConstants.getReviewedSessions(eventId),
+    );
+
+    final List data = response.data;
+
+    return data.map((e) => ReviewedSession.fromJson(e)).toList();
+  }
+
+  // =========================
+  // SESSION DECISION
+  // =========================
+
+  Future<void> updateSessionStatus(String sessionId, String status) async {
+    await _client.patch(
+      ApiConstants.updateSessionStatus(sessionId),
+      data: {"status": status},
+    );
   }
 }

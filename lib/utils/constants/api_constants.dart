@@ -47,6 +47,13 @@ class ApiConstants {
   static const String reviewerBase = "reviewer";
 
   static const String reviewerSessions = "$reviewerBase/sessions";
+  static const String reviewedSessions = "$reviewerBase/sessions/reviewed";
 
   static const String reviewerDashboardStats = "$reviewerBase/dashboard/stats";
+
+  static String getReviewedSessions(String eventId) =>
+      "/api/events/$eventId/reviewed-sessions";
+
+  static String updateSessionStatus(String sessionId) =>
+      "/api/sessions/$sessionId/status";
 }
