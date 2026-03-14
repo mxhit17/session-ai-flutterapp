@@ -56,4 +56,12 @@ class ApiConstants {
 
   static String updateSessionStatus(String sessionId) =>
       "/api/sessions/$sessionId/status";
+
+  static String autoSchedule(String eventId) =>
+      "/events/$eventId/schedule/auto";
+
+  static String getSchedule(String eventId) => "/events/$eventId/schedule";
+
+  static String getScheduleByDay(String eventId, String date) =>
+      "/events/$eventId/schedule/day/$date";
 }

@@ -2,7 +2,9 @@ import 'package:session.ai/core/events/models/get_events_response.dart';
 import 'package:session.ai/features/organiser/data/organiser_api.dart';
 import 'package:session.ai/features/organiser/models/all_rooms_response.dart';
 import 'package:session.ai/features/organiser/models/all_tracks_response.dart';
+import 'package:session.ai/features/organiser/models/create_schedule_response.dart';
 import 'package:session.ai/features/organiser/models/get_reviewer_pool_response.dart';
+import 'package:session.ai/features/organiser/models/get_schedule_response.dart';
 import 'package:session.ai/features/organiser/models/get_user_response.dart';
 import 'package:session.ai/features/organiser/models/reviewed_sessions_response.dart';
 
@@ -189,6 +191,55 @@ class OrganiserRepository {
       await _api.updateSessionStatus(sessionId, status);
     } catch (_) {
       throw Exception("Failed to update session status.");
+    }
+  }
+
+  // =========================
+  // CREATE SCHEDULE
+  // =========================
+
+  Future<CreateSchedule> createSchedule({
+    required String eventId,
+    required String startDate,
+    required String dayStartTime,
+    required String dayEndTime,
+  }) async {
+    try {
+      return await _api.createSchedule(
+        eventId: eventId,
+        startDate: startDate,
+        dayStartTime: dayStartTime,
+        dayEndTime: dayEndTime,
+      );
+    } catch (_) {
+      throw Exception("Failed to create schedule.");
+    }
+  }
+
+  // =========================
+  // GET SCHEDULE
+  // =========================
+
+  Future<List<GetSchedule>> getSchedule(String eventId) async {
+    try {
+      return await _api.getSchedule(eventId);
+    } catch (_) {
+      throw Exception("Failed to fetch schedule.");
+    }
+  }
+
+  // =========================
+  // GET SCHEDULE BY DAY
+  // =========================
+
+  Future<List<GetSchedule>> getScheduleByDay(
+    String eventId,
+    String date,
+  ) async {
+    try {
+      return await _api.getScheduleByDay(eventId, date);
+    } catch (_) {
+      throw Exception("Failed to fetch schedule for day.");
     }
   }
 }

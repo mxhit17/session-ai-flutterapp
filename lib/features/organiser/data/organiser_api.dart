@@ -2,7 +2,9 @@ import 'package:dio/dio.dart';
 import 'package:session.ai/core/events/models/get_events_response.dart';
 import 'package:session.ai/features/organiser/models/all_rooms_response.dart';
 import 'package:session.ai/features/organiser/models/all_tracks_response.dart';
+import 'package:session.ai/features/organiser/models/create_schedule_response.dart';
 import 'package:session.ai/features/organiser/models/get_reviewer_pool_response.dart';
+import 'package:session.ai/features/organiser/models/get_schedule_response.dart';
 import 'package:session.ai/features/organiser/models/get_user_response.dart';
 import 'package:session.ai/features/organiser/models/reviewed_sessions_response.dart';
 import 'package:session.ai/injection_container.dart';
@@ -153,5 +155,52 @@ class OrganiserApi {
       ApiConstants.updateSessionStatus(sessionId),
       data: {"status": status},
     );
+  }
+
+  // =========================
+  // AUTO SCHEDULE
+  // =========================
+
+  Future<CreateSchedule> createSchedule({
+    required String eventId,
+    required String startDate,
+    required String dayStartTime,
+    required String dayEndTime,
+  }) async {
+    final response = await _client.post(
+      ApiConstants.autoSchedule(eventId),
+      data: {
+        "startDate": startDate,
+        "dayStartTime": dayStartTime,
+        "dayEndTime": dayEndTime,
+      },
+    );
+
+    return CreateSchedule.fromJson(response.data);
+  }
+
+  // =========================
+  // GET FULL SCHEDULE
+  // =========================
+
+  Future<List<GetSchedule>> getSchedule(String eventId) async {
+    final response = await _client.get(ApiConstants.getSchedule(eventId));
+
+    return GetSchedule.listFromJson(response.data);
+  }
+
+  // =========================
+  // GET SCHEDULE BY DAY
+  // =========================
+
+  Future<List<GetSchedule>> getScheduleByDay(
+    String eventId,
+    String date,
+  ) async {
+    final response = await _client.get(
+      ApiConstants.getScheduleByDay(eventId, date),
+    );
+
+    return GetSchedule.listFromJson(response.data);
   }
 }

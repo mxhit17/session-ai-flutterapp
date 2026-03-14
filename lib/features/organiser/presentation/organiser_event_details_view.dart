@@ -4,6 +4,7 @@ import 'package:session.ai/core/events/models/get_events_response.dart';
 import 'package:session.ai/features/organiser/presentation/event_detail_view_helpers/cfp_modifier_view.dart';
 import 'package:session.ai/features/organiser/presentation/event_detail_view_helpers/event_details_helper_tabs.dart';
 import 'package:session.ai/features/organiser/presentation/event_detail_view_helpers/reviewed_sessions_tab.dart';
+import 'package:session.ai/features/organiser/presentation/schedule_view.dart';
 
 class OrganizerEventDetailScreen extends StatefulWidget {
   final GetEventsResponse event;
@@ -105,6 +106,52 @@ class _OrganizerEventDetailScreenState
                 endDate: dateFormat.format(event.endDate),
                 location: event.location,
                 isCfpOpen: event.cfpOpen,
+              ),
+            ),
+
+            /// ===== SCHEDULE ACTIONS =====
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Row(
+                children: [
+                  /// VIEW SCHEDULE
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.calendar_month),
+                      label: const Text("View Schedule"),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => ScheduleScreen(eventId: widget.event.id),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  /// GENERATE SCHEDULE
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.auto_fix_high),
+                      label: const Text("Generate Schedule"),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (_) => ScheduleBuilderScreen(
+                                  eventId: widget.event.id,
+                                ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
 
