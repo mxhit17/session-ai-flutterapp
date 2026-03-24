@@ -64,4 +64,6 @@ class ApiConstants {
 
   static String getScheduleByDay(String eventId, String date) =>
       "/events/$eventId/schedule/day/$date";
+
+  static String upload = "upload";
 }

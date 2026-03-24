@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
-import 'package:session.ai/core/widgets/app_sign_in_button.dart';
-import 'package:session.ai/features/auth/presentation/sign_in_view.dart';
 import 'package:session.ai/features/events/data/events_repository.dart';
 import 'package:session.ai/features/events/presentation/event_details_public_view.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
@@ -32,22 +30,22 @@ class EventsListPage extends StatelessWidget {
             fontSize: 20,
           ),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 24),
-            child: Center(
-              child: AppSignInButton(
-                fullWidth: false, // Important for AppBar usage
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignInPage()),
-                  );
-                },
-              ),
-            ),
-          ),
-        ],
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.only(right: 24),
+        //     child: Center(
+        //       child: AppSignInButton(
+        //         fullWidth: false, // Important for AppBar usage
+        //         onPressed: () {
+        //           Navigator.push(
+        //             context,
+        //             MaterialPageRoute(builder: (context) => SignInPage()),
+        //           );
+        //         },
+        //       ),
+        //     ),
+        //   ),
+        // ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),

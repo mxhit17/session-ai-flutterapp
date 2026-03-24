@@ -26,8 +26,8 @@ class DioClient {
           // can add bearer token here
           String token =
               "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NjksImVtYWlsIjoibW11ZGdhbDY3QGdtYWlsLmNvbSIsInJvbGUiOiJDT01QQU5ZIiwiaWF0IjoxNzUyNDg0Mjg0LCJleHAiOjE3NTI2NTcwODR9.W_DpdydE2ZuXaLUX103TUl2m275HD9MRBWVnZ2s5w6w";
-          final _prefs = sl<PreferencesManager>();
-          final storedToken = _prefs.getAccessToken();
+          final prefs = sl<PreferencesManager>();
+          final storedToken = prefs.getAccessToken();
           if (storedToken != null && storedToken != '') {
             token = storedToken;
           }

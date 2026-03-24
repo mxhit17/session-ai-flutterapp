@@ -113,7 +113,9 @@ class _ReviewerSessionDetailsScreenState
                     title: Text(session.event.title),
                     subtitle: Text(session.event.location),
                     trailing: Text(
-                      "${session.event.startDate.toLocal().toString().split(" ")[0]}",
+                      session.event.startDate.toLocal().toString().split(
+                        " ",
+                      )[0],
                     ),
                   ),
                 ),

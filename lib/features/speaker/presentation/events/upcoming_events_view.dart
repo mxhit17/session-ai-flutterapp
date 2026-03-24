@@ -1,9 +1,12 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:session.ai/features/events/data/events_repository.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
 import 'package:session.ai/features/speaker/presentation/events/create_event_view.dart';
 import 'package:session.ai/features/speaker/presentation/events/event_detail_view.dart';
+import 'package:session.ai/utils/constants/consts.dart';
 
 class UpcomingEventsScreen extends StatefulWidget {
   const UpcomingEventsScreen({super.key});
@@ -68,7 +71,9 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen> {
               itemCount: events.length,
               itemBuilder: (context, index) {
                 final event = events[index];
-
+                final random = Random();
+                final imageUrl =
+                    randomImages[random.nextInt(randomImages.length)];
                 return InkWell(
                   borderRadius: BorderRadius.circular(16),
                   onTap: () {
@@ -89,6 +94,19 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // 🔥 Event Image
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.network(
+                            imageUrl,
+                            height: 200,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+
+                        const SizedBox(height: 12),
+
                         Text(
                           event.title,
                           style: const TextStyle(

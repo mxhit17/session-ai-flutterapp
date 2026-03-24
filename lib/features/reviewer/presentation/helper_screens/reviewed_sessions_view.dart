@@ -52,8 +52,8 @@ class _ReviewedSessionsScreenState extends State<ReviewedSessionsScreen> {
             itemBuilder: (context, index) {
               final session = sessions[index];
               final review =
-                  session.sessions?.reviews?.isNotEmpty == true
-                      ? session.sessions!.reviews!.first
+                  session.sessions.reviews.isNotEmpty == true
+                      ? session.sessions.reviews.first
                       : null;
 
               return Card(
@@ -71,8 +71,7 @@ class _ReviewedSessionsScreenState extends State<ReviewedSessionsScreen> {
                     children: [
                       const SizedBox(height: 6),
 
-                      if (session.sessions.title != null)
-                        Text("Event: ${session.sessions.title}"),
+                      Text("Event: ${session.sessions.title}"),
 
                       if (session.sessions.tracks != null)
                         Text("Track: ${session.sessions.tracks}"),

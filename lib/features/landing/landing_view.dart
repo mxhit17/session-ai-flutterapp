@@ -9,13 +9,16 @@ class LandingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0A0F1C),
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 24),
             child: Center(
               child: AppSignInButton(
-                fullWidth: false, // Important for AppBar usage
+                fullWidth: false,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -31,13 +34,13 @@ class LandingPage extends StatelessWidget {
         child: Column(
           children: const [
             HeroSection(),
-            SizedBox(height: 80),
+            SizedBox(height: 100),
             FeaturesSection(),
-            SizedBox(height: 80),
+            SizedBox(height: 100),
             HowItWorksSection(),
-            SizedBox(height: 80),
+            SizedBox(height: 100),
             RolesSection(),
-            SizedBox(height: 80),
+            SizedBox(height: 100),
             CTASection(),
           ],
         ),
@@ -51,44 +54,41 @@ class HeroSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 120, horizontal: 24),
       child: Column(
         children: [
-          const Text(
-            "AI-Assisted Session Management Platform",
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold),
+          ShaderMask(
+            shaderCallback:
+                (bounds) => const LinearGradient(
+                  colors: [Color(0xFF00F5FF), Color(0xFF8B5CF6)],
+                ).createShader(bounds),
+            child: const Text(
+              "AI-Powered Session Management",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 44,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
           ),
           const SizedBox(height: 20),
           const Text(
-            "Fair. Scalable. Intelligent conference session selection.",
+            "Intelligent. Fair. Fully automated conference workflows.",
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 18, color: Colors.grey),
+            style: TextStyle(fontSize: 18, color: Colors.white70),
           ),
           const SizedBox(height: 40),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-              backgroundColor: const Color(0xFF3B82F6),
-              foregroundColor: Colors.white, // THIS FIXES TEXT
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+          GlowButton(
+            text: "Get Started",
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => EventsListPage()),
               );
             },
-            child: const Text("Get Started"),
           ),
-          // const SizedBox(height: 20),
         ],
       ),
     );
@@ -99,43 +99,28 @@ class FeaturesSection extends StatelessWidget {
   const FeaturesSection({super.key});
 
   Widget featureCard(String title, String desc) {
-    return Container(
-      width: 300,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        children: [
-          // Text(
-          //   title,
-          //   style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          // ),
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white, // FIX
+    return GlassContainer(
+      child: Container(
+        width: 300,
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF00F5FF),
+              ),
             ),
-          ),
-
-          const SizedBox(height: 12),
-          // Text(
-          //   desc,
-          //   textAlign: TextAlign.center,
-          //   style: const TextStyle(color: Colors.grey),
-          // ),
-          Text(
-            desc,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white70, // BETTER THAN GREY
-              fontSize: 14,
+            const SizedBox(height: 12),
+            Text(
+              desc,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white70),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -168,19 +153,26 @@ class HowItWorksSection extends StatelessWidget {
   const HowItWorksSection({super.key});
 
   Widget step(String title, String desc) {
-    return Column(
-      children: [
-        Text(
-          title,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          desc,
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.grey),
-        ),
-      ],
+    return SizedBox(
+      width: 250,
+      child: Column(
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF8B5CF6),
+            ),
+          ),
+          const SizedBox(height: 10),
+          Text(
+            desc,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white70),
+          ),
+        ],
+      ),
     );
   }
 
@@ -249,20 +241,18 @@ class RolesCardWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 160,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: const Color(0xFF1E293B),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: Text(
-          role,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.white, // FIX
+    return GlassContainer(
+      child: Container(
+        width: 160,
+        padding: const EdgeInsets.all(20),
+        child: Center(
+          child: Text(
+            role,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF22C55E),
+            ),
           ),
         ),
       ),
@@ -275,40 +265,81 @@ class CTASection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 100),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 120),
       child: Column(
         children: [
           const Text(
-            "Ready to run smarter events?",
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            "Launch your AI-driven event platform",
+            style: TextStyle(
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
           ),
           const SizedBox(height: 30),
-          // ElevatedButton(
-          //   style: ElevatedButton.styleFrom(
-          //     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-          //     backgroundColor: Colors.blueAccent,
-          //   ),
-          //   onPressed: () {},
-          //   child: const Text("Launch Platform"),
-          // ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
-              backgroundColor: const Color(0xFF3B82F6),
-              foregroundColor: Colors.white, // THIS FIXES TEXT
-              textStyle: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            onPressed: () {},
-            child: const Text("Launch Platform"),
+          GlowButton(
+            text: "Launch Platform",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => SignInPage()),
+              );
+            },
           ),
         ],
+      ),
+    );
+  }
+}
+
+class GlassContainer extends StatelessWidget {
+  final Widget child;
+  const GlassContainer({required this.child, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.1)),
+      ),
+      child: child,
+    );
+  }
+}
+
+class GlowButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+
+  const GlowButton({required this.text, required this.onPressed, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF00F5FF).withOpacity(0.6),
+            blurRadius: 20,
+            spreadRadius: 1,
+          ),
+        ],
+      ),
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: const Color(0xFF00F5FF),
+          foregroundColor: Colors.black,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 18),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: onPressed,
+        child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }

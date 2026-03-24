@@ -17,8 +17,6 @@ class _OrganizerNavState extends ConsumerState<OrganizerNav> {
   final List<Widget> _pages = const [
     OrganizerDashboardScreen(),
     OrganizerEventsScreen(),
-    OrganizerReviewScreen(),
-    OrganizerScheduleScreen(),
     OrganizerProfileScreen(),
   ];
 
@@ -53,14 +51,6 @@ class _OrganizerNavState extends ConsumerState<OrganizerNav> {
             label: "Dashboard",
           ),
           BottomNavigationBarItem(icon: Icon(Icons.event), label: "Events"),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.rate_review),
-            label: "Reviews",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.schedule),
-            label: "Schedule",
-          ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
         ],
       ),

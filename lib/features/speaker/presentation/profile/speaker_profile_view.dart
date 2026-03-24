@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:session.ai/core/upload_images/upload_provider.dart';
 import 'package:session.ai/features/speaker/data/speaker_api.dart';
 
 class SpeakerProfileScreen extends ConsumerWidget {
@@ -8,6 +11,50 @@ class SpeakerProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(speakerProfileProvider);
+    final uploadState = ref.watch(uploadImageProvider);
+    void _showSnack(BuildContext context, String message) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
+
+    Future<void> _pickAndUploadImage(
+      BuildContext context,
+      WidgetRef ref,
+    ) async {
+      try {
+        final picker = ImagePicker();
+
+        final picked = await picker.pickImage(
+          source: ImageSource.gallery,
+          imageQuality: 70,
+        );
+
+        if (picked == null) return;
+
+        final file = File(picked.path);
+
+        /// STEP 1: Upload image
+        final url = await ref.read(uploadImageProvider.notifier).upload(file);
+
+        if (url == null) {
+          _showSnack(context, "Image upload failed");
+          return;
+        }
+
+        /// STEP 2: Call PATCH API
+        await ref.read(updateSpeakerProfileProvider.notifier).updateField({
+          "profile_photo_url": url,
+        });
+
+        /// STEP 3: Refresh profile
+        ref.invalidate(speakerProfileProvider);
+
+        _showSnack(context, "Profile photo updated ✅");
+      } catch (e) {
+        _showSnack(context, "Something went wrong");
+      }
+    }
 
     return Scaffold(
       body: profileAsync.when(
@@ -28,27 +75,44 @@ class SpeakerProfileScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(20),
               children: [
                 Center(
-                  child: CircleAvatar(
-                    radius: 50,
-                    backgroundImage:
-                        profile.profilePhotoUrl != null
-                            ? NetworkImage(profile.profilePhotoUrl!)
-                            : null,
-                    child:
-                        profile.profilePhotoUrl == null
-                            ? const Icon(Icons.person, size: 50)
-                            : null,
+                  child: GestureDetector(
+                    onTap: () => _pickAndUploadImage(context, ref),
+                    child: Stack(
+                      children: [
+                        uploadState is AsyncLoading
+                            ? const CircularProgressIndicator()
+                            : CircleAvatar(
+                              radius: 50,
+                              backgroundImage:
+                                  profile.profilePhotoUrl != null
+                                      ? NetworkImage(profile.profilePhotoUrl!)
+                                      : null,
+                              child:
+                                  profile.profilePhotoUrl == null
+                                      ? const Icon(Icons.person, size: 50)
+                                      : null,
+                            ),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.blue,
+                            ),
+                            child: const Icon(
+                              Icons.camera_alt,
+                              size: 16,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),
-
-                // _buildEditableTile(
-                //   context,
-                //   ref,
-                //   "Experience Level",
-                //   profile.experienceLevel,
-                //   "experience_level",
-                // ),
                 _buildEditableTile(
                   context,
                   ref,
@@ -66,16 +130,6 @@ class SpeakerProfileScreen extends ConsumerWidget {
                 _buildEditableTile(context, ref, "Bio", profile.bio, "bio"),
 
                 _buildTile("User ID", profile.userId),
-
-                const SizedBox(height: 30),
-
-                ElevatedButton.icon(
-                  onPressed: () {
-                    // TODO: Navigate to Edit Profile
-                  },
-                  icon: const Icon(Icons.edit),
-                  label: const Text("Edit Profile"),
-                ),
               ],
             ),
           );

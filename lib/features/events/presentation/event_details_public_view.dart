@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:session.ai/core/widgets/app_sign_in_button.dart';
 import 'package:session.ai/features/auth/presentation/sign_in_view.dart';
 
 class EventDetailsPage extends StatelessWidget {
@@ -29,20 +28,20 @@ class EventDetailsPage extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 24),
-            child: Center(
-              child: AppSignInButton(
-                fullWidth: false, // Important for AppBar usage
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => SignInPage()),
-                  );
-                },
-              ),
-            ),
-          ),
+          // Padding(
+          //   padding: const EdgeInsets.only(right: 24),
+          //   child: Center(
+          //     child: AppSignInButton(
+          //       fullWidth: false, // Important for AppBar usage
+          //       onPressed: () {
+          //         Navigator.push(
+          //           context,
+          //           MaterialPageRoute(builder: (context) => SignInPage()),
+          //         );
+          //       },
+          //     ),
+          //   ),
+          // ),
         ],
       ),
       body: SingleChildScrollView(
@@ -135,7 +134,17 @@ class EventDetailsPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Please sign in first.")),
+                      );
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignInPage()),
+                      );
+                    },
                     child: const Text("Submit Proposal"),
                   ),
                 ),

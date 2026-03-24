@@ -67,10 +67,10 @@ class ComingSoonScreen extends StatelessWidget {
                     padding: EdgeInsets.zero,
                     elevation: 3,
                   ).copyWith(
-                    backgroundColor: MaterialStateProperty.resolveWith(
+                    backgroundColor: WidgetStateProperty.resolveWith(
                       (states) => null,
                     ),
-                    foregroundColor: MaterialStateProperty.all<Color>(
+                    foregroundColor: WidgetStateProperty.all<Color>(
                       Colors.white,
                     ),
                   ),

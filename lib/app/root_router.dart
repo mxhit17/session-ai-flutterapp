@@ -20,7 +20,6 @@ class RootRouter extends ConsumerWidget {
     // Show splash while loading storage
     if (auth.token == null && auth.roles.isEmpty) {
       return const SplashScreen();
-      // return const LandingPage();
     }
 
     // Not logged in

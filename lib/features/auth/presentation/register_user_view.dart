@@ -24,7 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
 
-  String _selectedRole = "SPEAKER";
+  final String _selectedRole = "SPEAKER";
   final AuthRepository _authRepository = AuthRepository();
 
   final _prefs = sl<PreferencesManager>();

@@ -27,7 +27,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     // If already logged in during this session, don't overwrite state
     if (state.token != null) return;
 
-    if (token != null && roles != null && roles.isNotEmpty) {
+    if (token != null && roles.isNotEmpty) {
       state = AuthState(
         token: token,
         roles: roles,

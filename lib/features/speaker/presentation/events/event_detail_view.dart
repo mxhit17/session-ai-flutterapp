@@ -2,10 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
 import 'package:session.ai/features/speaker/presentation/events/submit_session_screen.dart';
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:session.ai/features/events/models/all_events_list_response.dart';
-import 'package:session.ai/features/speaker/presentation/events/submit_session_screen.dart';
 
 class EventDetailScreen extends StatelessWidget {
   final Event event;
