@@ -65,111 +65,180 @@ class _SubmitSessionScreenState extends State<SubmitSessionScreen> {
     }
   }
 
+  InputDecoration _inputDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      filled: true,
+      fillColor: Colors.white.withOpacity(0.9),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: BorderSide(color: Colors.grey.shade300),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: Color(0xFF6C63FF), width: 1.5),
+      ),
+    );
+  }
+
+  Widget _sectionTitle(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 6),
+      child: Text(
+        text,
+        style: const TextStyle(
+          fontWeight: FontWeight.w600,
+          fontSize: 14,
+          color: Colors.black87,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Submit Session")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// TITLE
-              const Text(
-                "Title",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
+      backgroundColor: const Color(0xFFF5F7FB),
+      appBar: AppBar(
+        title: const Text("Submit Session"),
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF5F7FB), Color(0xFFEDEFFF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                /// Glass Card
+                Container(
+                  padding: const EdgeInsets.all(18),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.85),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        offset: const Offset(0, 6),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      /// TITLE
+                      _sectionTitle("Title"),
+                      TextFormField(
+                        controller: _titleController,
+                        decoration: _inputDecoration("Enter session title"),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Title is required";
+                          }
+                          return null;
+                        },
+                      ),
 
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Enter session title",
+                      const SizedBox(height: 20),
+
+                      /// ABSTRACT
+                      _sectionTitle("Abstract"),
+                      TextFormField(
+                        controller: _abstractController,
+                        maxLines: 5,
+                        decoration: _inputDecoration("Enter session abstract"),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Abstract is required";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      /// LEVEL
+                      _sectionTitle("Level"),
+                      DropdownButtonFormField<String>(
+                        value: _selectedLevel,
+                        items:
+                            _levels
+                                .map(
+                                  (level) => DropdownMenuItem(
+                                    value: level,
+                                    child: Text(level),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedLevel = value!;
+                          });
+                        },
+                        decoration: _inputDecoration("Select level"),
+                      ),
+                    ],
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Title is required";
-                  }
-                  return null;
-                },
-              ),
 
-              const SizedBox(height: 20),
+                const SizedBox(height: 30),
 
-              /// ABSTRACT
-              const Text(
-                "Abstract",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-
-              TextFormField(
-                controller: _abstractController,
-                maxLines: 5,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: "Enter session abstract",
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Abstract is required";
-                  }
-                  return null;
-                },
-              ),
-
-              const SizedBox(height: 20),
-
-              /// LEVEL DROPDOWN
-              const Text(
-                "Level",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 6),
-
-              DropdownButtonFormField<String>(
-                value: _selectedLevel,
-                items:
-                    _levels
-                        .map(
-                          (level) => DropdownMenuItem(
-                            value: level,
-                            child: Text(level),
-                          ),
-                        )
-                        .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedLevel = value!;
-                  });
-                },
-                decoration: const InputDecoration(border: OutlineInputBorder()),
-              ),
-
-              const SizedBox(height: 30),
-
-              /// SUBMIT BUTTON
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isSubmitting ? null : _submitSession,
-                  child:
-                      _isSubmitting
-                          ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                /// SUBMIT BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submitSession,
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      elevation: 6,
+                      backgroundColor: const Color(0xFF6C63FF),
+                    ),
+                    child:
+                        _isSubmitting
+                            ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                            : Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Submit Session",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                          : const Text("Submit Session"),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

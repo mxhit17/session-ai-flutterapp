@@ -16,5 +16,6 @@ Future<void> initializeDependencies() async {
   );
 
   // Register dio client
-  sl.registerSingleton<DioClient>(DioClient(ApiConstants.baseUrl));
+  sl.registerSingleton<DioClient>(DioClient(ApiConstants.baseUrlLocal));
+  // sl.registerSingleton<DioClient>(DioClient(ApiConstants.baseUrlProd));
 }

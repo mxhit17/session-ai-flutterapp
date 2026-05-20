@@ -180,132 +180,199 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F8FB),
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.black87,
         title: Text(
           widget.existingEvent == null ? "Create Event" : "Edit Event",
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
+        centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              /// Title
-              TextFormField(
-                controller: _titleController,
-                decoration: const InputDecoration(
-                  labelText: "Event Title",
-                  border: OutlineInputBorder(),
-                ),
-                validator:
-                    (value) => value!.isEmpty ? "Title is required" : null,
-              ),
-              const SizedBox(height: 16),
-
-              /// Description
-              TextFormField(
-                controller: _descriptionController,
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: "Description",
-                  border: OutlineInputBorder(),
-                ),
-                validator:
-                    (value) =>
-                        value!.isEmpty ? "Description is required" : null,
-              ),
-              const SizedBox(height: 16),
-
-              /// Location
-              TextFormField(
-                controller: _locationController,
-                decoration: const InputDecoration(
-                  labelText: "Location",
-                  border: OutlineInputBorder(),
-                ),
-                validator:
-                    (value) => value!.isEmpty ? "Location is required" : null,
-              ),
-              const SizedBox(height: 16),
-
-              /// Date Range Picker
-              InkWell(
-                onTap: _pickDateRange,
-                child: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 16,
-                  ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFF6F8FB), Color(0xFFEAF1FF)],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              children: [
+                /// MAIN CARD
+                Container(
+                  padding: const EdgeInsets.all(18),
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _selectedDateRange == null
-                            ? "Select Event Date Range"
-                            : "${formatDate(_selectedDateRange!.start)}  →  ${formatDate(_selectedDateRange!.end)}",
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
-                      const Icon(Icons.calendar_month),
+                    ],
+                  ),
+                  child: Column(
+                    children: [
+                      _buildInput(
+                        controller: _titleController,
+                        label: "Event Title",
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildInput(
+                        controller: _descriptionController,
+                        label: "Description",
+                        maxLines: 3,
+                      ),
+                      const SizedBox(height: 16),
+
+                      _buildInput(
+                        controller: _locationController,
+                        label: "Location",
+                      ),
+                      const SizedBox(height: 16),
+
+                      /// DATE PICKER
+                      GestureDetector(
+                        onTap: _pickDateRange,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade100,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_month_outlined),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  _selectedDateRange == null
+                                      ? "Select Event Date Range"
+                                      : "${formatDate(_selectedDateRange!.start)}  →  ${formatDate(_selectedDateRange!.end)}",
+                                  style: TextStyle(
+                                    color:
+                                        _selectedDateRange == null
+                                            ? Colors.grey
+                                            : Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      /// TIMEZONE
+                      DropdownButtonFormField<String>(
+                        value: _selectedTimezone,
+                        items:
+                            _timezones
+                                .map(
+                                  (tz) => DropdownMenuItem(
+                                    value: tz,
+                                    child: Text(tz),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedTimezone = value!;
+                          });
+                        },
+                        decoration: _inputDecoration("Timezone"),
+                      ),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
 
-              /// Timezone Dropdown
-              DropdownButtonFormField<String>(
-                value: _selectedTimezone,
-                items:
-                    _timezones
-                        .map(
-                          (tz) => DropdownMenuItem(value: tz, child: Text(tz)),
-                        )
-                        .toList(),
-                onChanged: (value) {
-                  setState(() {
-                    _selectedTimezone = value!;
-                  });
-                },
-                decoration: const InputDecoration(
-                  labelText: "Timezone",
-                  border: OutlineInputBorder(),
-                ),
-              ),
+                const SizedBox(height: 28),
 
-              const SizedBox(height: 24),
-
-              /// Submit Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                  ),
-                  child:
-                      _isLoading
-                          ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                /// BUTTON
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _isLoading ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 8,
+                      shadowColor: Colors.blue.withOpacity(0.3),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      backgroundColor: const Color(0xFF4F46E5),
+                    ),
+                    child:
+                        _isLoading
+                            ? const SizedBox(
+                              height: 22,
+                              width: 22,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                            : Text(
+                              widget.existingEvent == null
+                                  ? "Create Event"
+                                  : "Update Event",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
-                          )
-                          : widget.existingEvent == null
-                          ? Text("Create Event")
-                          : Text("Edit Event"),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+Widget _buildInput({
+  required TextEditingController controller,
+  required String label,
+  int maxLines = 1,
+}) {
+  return TextFormField(
+    controller: controller,
+    maxLines: maxLines,
+    decoration: _inputDecoration(label),
+    validator:
+        (value) => value == null || value.isEmpty ? "$label is required" : null,
+  );
+}
+
+InputDecoration _inputDecoration(String label) {
+  return InputDecoration(
+    labelText: label,
+    filled: true,
+    fillColor: Colors.grey.shade100,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: Color(0xFF4F46E5)),
+    ),
+  );
 }

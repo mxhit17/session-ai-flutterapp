@@ -1,5 +1,5 @@
 name: session.ai
-description: "A new Flutter project."
+description: "SessionAI is a smart event management Flutter app designed to simplify organizing and managing events. It allows users to register, manage sessions, handle roles like organizers, reviewers, and speakers, and streamline the complete event workflow through a modern and responsive mobile experience powered by Flutter."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -41,6 +41,7 @@ dependencies:
   intl: ^0.20.2
   flutter_staggered_grid_view: ^0.7.0
   flutter_riverpod: ^2.6.1
+  change_app_package_name: ^1.5.0
 
 dev_dependencies:
   flutter_test:
@@ -52,6 +53,7 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  # flutter_launcher_icons: 
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

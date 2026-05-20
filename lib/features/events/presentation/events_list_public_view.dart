@@ -4,56 +4,50 @@ import 'package:intl/intl.dart';
 import 'package:session.ai/features/events/data/events_repository.dart';
 import 'package:session.ai/features/events/presentation/event_details_public_view.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
+import 'package:session.ai/features/landing/landing_view.dart';
 
+/// ---------------- COLORS ----------------
+class AppColors {
+  static const bg = Color(0xFF0A0F1C);
+  static const card = Color(0xFF111827);
+  static const glass = Color(0xFF1A2238);
+
+  static const cyan = Color(0xFF00F5FF);
+  static const purple = Color(0xFF8B5CF6);
+  static const green = Color(0xFF22C55E);
+}
+
+/// ---------------- MAIN PAGE ----------------
 class EventsListPage extends StatelessWidget {
   const EventsListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F172A),
+      backgroundColor: AppColors.bg,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        centerTitle: false,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         ),
         title: const Text(
           "Explore Events",
           style: TextStyle(
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w600,
             fontSize: 20,
+            letterSpacing: 0.5,
           ),
         ),
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.only(right: 24),
-        //     child: Center(
-        //       child: AppSignInButton(
-        //         fullWidth: false, // Important for AppBar usage
-        //         onPressed: () {
-        //           Navigator.push(
-        //             context,
-        //             MaterialPageRoute(builder: (context) => SignInPage()),
-        //           );
-        //         },
-        //       ),
-        //     ),
-        //   ),
-        // ],
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             SearchBarSection(),
-            SizedBox(height: 32),
+            SizedBox(height: 24),
             Expanded(child: EventsGrid()),
           ],
         ),
@@ -62,31 +56,27 @@ class EventsListPage extends StatelessWidget {
   }
 }
 
+/// ---------------- SEARCH ----------------
 class SearchBarSection extends StatelessWidget {
   const SearchBarSection({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 50,
+    return GlassContainer(
       child: TextField(
         style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
-          hintText: "Search events...",
-          hintStyle: const TextStyle(color: Colors.white54),
-          prefixIcon: const Icon(Icons.search, color: Colors.white70),
-          filled: true,
-          fillColor: const Color(0xFF1F2937),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
+          hintText: "Search events with AI...",
+          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+          prefixIcon: const Icon(Icons.auto_awesome, color: AppColors.cyan),
+          border: InputBorder.none,
         ),
       ),
     );
   }
 }
 
+/// ---------------- GRID ----------------
 class EventsGrid extends StatefulWidget {
   const EventsGrid({super.key});
 
@@ -110,22 +100,30 @@ class _EventsGridState extends State<EventsGrid> {
       future: _eventsFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.cyan),
+          );
         }
 
         if (snapshot.hasError) {
-          return const Center(child: Text("Something went wrong"));
+          return const Center(
+            child: Text(
+              "Something went wrong",
+              style: TextStyle(color: Colors.white),
+            ),
+          );
         }
 
         final events = snapshot.data!;
 
         return MasonryGridView.count(
           crossAxisCount: 2,
-          mainAxisSpacing: 24,
-          crossAxisSpacing: 24,
+          mainAxisSpacing: 20,
+          crossAxisSpacing: 20,
           itemCount: events.events.length,
           itemBuilder: (context, index) {
             final event = events.events[index];
+
             final start = DateFormat('dd MMM yyyy').format(event.startDate);
             final end = DateFormat('dd MMM yyyy').format(event.endDate);
 
@@ -142,6 +140,7 @@ class _EventsGridState extends State<EventsGrid> {
   }
 }
 
+/// ---------------- CARD ----------------
 class EventCard extends StatelessWidget {
   final String title;
   final String description;
@@ -159,36 +158,67 @@ class EventCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: const Color(0xFF1F2937),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(18),
+        gradient: const LinearGradient(
+          colors: [Color(0xFF111827), Color(0xFF1F2937)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        border: Border.all(
+          color: const Color(0xFF00F5FF).withOpacity(0.15),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF00F5FF).withOpacity(0.08),
+            blurRadius: 20,
+            spreadRadius: 1,
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          /// 🔹 Title
           Text(
             title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
               color: Colors.white,
+              letterSpacing: 0.3,
             ),
           ),
-          const SizedBox(height: 10),
+
+          const SizedBox(height: 8),
+
+          /// 🔹 Description
           Text(
             description,
-            style: const TextStyle(color: Colors.white70, fontSize: 14),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              height: 1.4,
+            ),
           ),
-          const SizedBox(height: 16),
+
+          const SizedBox(height: 14),
+
+          /// 🔹 Location
           Row(
             children: [
-              const Icon(Icons.location_on, size: 16, color: Colors.white54),
+              const Icon(Icons.location_on, size: 14, color: Colors.cyanAccent),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
                   location,
-                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  style: const TextStyle(color: Colors.white60, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -196,14 +226,20 @@ class EventCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 6),
+
+          /// 🔹 Date (FIXED)
           Row(
             children: [
-              const Icon(Icons.calendar_today, size: 16, color: Colors.white54),
+              const Icon(
+                Icons.calendar_today,
+                size: 14,
+                color: Colors.purpleAccent,
+              ),
               const SizedBox(width: 6),
               Expanded(
                 child: Text(
-                  location,
-                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  date,
+                  style: const TextStyle(color: Colors.white60, fontSize: 12),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -211,13 +247,16 @@ class EventCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
+
+          /// 🔹 View Details Button (UNCHANGED LOGIC)
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 13),
                 backgroundColor: const Color(0xFF3B82F6),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
@@ -236,8 +275,10 @@ class EventCard extends StatelessWidget {
                   ),
                 );
               },
-
-              child: const Text("View Details"),
+              child: const Text(
+                "View Details",
+                style: TextStyle(fontWeight: FontWeight.w600),
+              ),
             ),
           ),
         ],

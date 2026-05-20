@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:session.ai/features/reviewer/data/reviewer_api.dart';
 
@@ -55,67 +56,142 @@ class _ReviewSubmitScreenState extends State<ReviewSubmitScreen> {
       children: List.generate(5, (index) {
         final starIndex = index + 1;
 
-        return IconButton(
-          iconSize: 36,
-          icon: Icon(
-            starIndex <= _rating ? Icons.star : Icons.star_border,
-            color: Colors.orange,
-          ),
-          onPressed: () {
+        return GestureDetector(
+          onTap: () {
             setState(() {
               _rating = starIndex;
             });
           },
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            margin: const EdgeInsets.symmetric(horizontal: 6),
+            child: Icon(
+              starIndex <= _rating ? Icons.star : Icons.star_border,
+              size: 38,
+              color:
+                  starIndex <= _rating
+                      ? const Color(0xFFFFB547)
+                      : Colors.grey.shade400,
+            ),
+          ),
         );
       }),
+    );
+  }
+
+  Widget _glassCard({required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            color: Colors.white.withOpacity(0.7),
+            border: Border.all(color: Colors.white.withOpacity(0.3)),
+          ),
+          child: child,
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Submit Review")),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            const Text(
-              "Rate this session",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text("Submit Review"),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+      ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Color(0xFFEAF2FF), Color(0xFFF8F9FF)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 100, 20, 20),
+          child: Column(
+            children: [
+              SizedBox(height: 40),
+              _glassCard(
+                child: Column(
+                  children: [
+                    const Text(
+                      "Rate this session",
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
 
-            const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-            /// ⭐ STAR RATING
-            _buildStars(),
+                    _buildStars(),
 
-            const SizedBox(height: 30),
+                    const SizedBox(height: 30),
 
-            /// COMMENT INPUT
-            TextField(
-              controller: _commentController,
-              maxLines: 5,
-              decoration: const InputDecoration(
-                labelText: "Comment",
-                border: OutlineInputBorder(),
-                hintText: "Write your review...",
+                    TextField(
+                      controller: _commentController,
+                      maxLines: 5,
+                      decoration: InputDecoration(
+                        hintText: "Write your review...",
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.6),
+                        contentPadding: const EdgeInsets.all(16),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 30),
+              const Spacer(),
 
-            /// SUBMIT BUTTON
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _submitReview,
-                child:
-                    _loading
-                        ? const CircularProgressIndicator()
-                        : const Text("Submit Review"),
+              /// BUTTON
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _loading ? null : _submitReview,
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(18),
+                    ),
+                    elevation: 4,
+                    backgroundColor: const Color(0xFF5B8CFF),
+                  ),
+                  child:
+                      _loading
+                          ? const SizedBox(
+                            height: 22,
+                            width: 22,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2.5,
+                              color: Colors.white,
+                            ),
+                          )
+                          : const Text(
+                            "Submit Review",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

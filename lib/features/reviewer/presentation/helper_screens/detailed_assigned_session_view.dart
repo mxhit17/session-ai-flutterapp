@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:session.ai/features/reviewer/data/reviewer_api.dart';
 import 'package:session.ai/features/reviewer/models/get_assigned_session_details.dart';
@@ -16,7 +17,6 @@ class ReviewerSessionDetailsScreen extends StatefulWidget {
 class _ReviewerSessionDetailsScreenState
     extends State<ReviewerSessionDetailsScreen> {
   late Future<GetAssignedSessionDetails> _future;
-
   final ReviewerApi _api = ReviewerApi();
 
   @override
@@ -25,29 +25,81 @@ class _ReviewerSessionDetailsScreenState
     _future = _api.getSessionDetails(widget.sessionId);
   }
 
+  Widget glassCard({required Widget child}) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.7),
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: Colors.white.withOpacity(0.4)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: child,
+        ),
+      ),
+    );
+  }
+
+  Widget sectionTitle(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, top: 16),
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Session Details")),
-      floatingActionButton: FloatingActionButton.extended(
-        icon: const Icon(Icons.rate_review),
-        label: const Text("Review"),
-        onPressed: () async {
-          final result = await Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => ReviewSubmitScreen(sessionId: widget.sessionId),
-            ),
-          );
-
-          /// Refresh session details after review submission
-          if (result == true) {
-            setState(() {
-              _future = _api.getSessionDetails(widget.sessionId);
-            });
-          }
-        },
+      backgroundColor: const Color(0xFFF6F8FC),
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: Colors.transparent,
+        title: const Text("Session Details"),
+        foregroundColor: Colors.black87,
       ),
+
+      floatingActionButton: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+          ),
+          borderRadius: BorderRadius.circular(30),
+        ),
+        child: FloatingActionButton.extended(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          icon: const Icon(Icons.rate_review),
+          label: const Text("Review"),
+          onPressed: () async {
+            final result = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => ReviewSubmitScreen(sessionId: widget.sessionId),
+              ),
+            );
+
+            if (result == true) {
+              setState(() {
+                _future = _api.getSessionDetails(widget.sessionId);
+              });
+            }
+          },
+        ),
+      ),
+
       body: FutureBuilder<GetAssignedSessionDetails>(
         future: _future,
         builder: (context, snapshot) {
@@ -66,50 +118,40 @@ class _ReviewerSessionDetailsScreenState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                /// TITLE
-                Text(
-                  session.title,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                /// TITLE CARD
+                glassCard(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        session.title,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      Row(
+                        children: [
+                          _chip(session.level, Colors.blue),
+                          const SizedBox(width: 8),
+                          _chip(session.status, Colors.green),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
 
-                const SizedBox(height: 8),
-
-                /// LEVEL + STATUS
-                Row(
-                  children: [
-                    Chip(label: Text(session.level)),
-                    const SizedBox(width: 10),
-                    Chip(label: Text(session.status)),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
                 /// ABSTRACT
-                const Text(
-                  "Abstract",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
+                sectionTitle("Abstract"),
+                glassCard(child: Text(session.abstract)),
 
-                const SizedBox(height: 8),
-
-                Text(session.abstract),
-
-                const SizedBox(height: 24),
-
-                /// EVENT INFO
-                const Text(
-                  "Event",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-
-                const SizedBox(height: 8),
-
-                Card(
+                /// EVENT
+                sectionTitle("Event"),
+                glassCard(
                   child: ListTile(
+                    contentPadding: EdgeInsets.zero,
                     title: Text(session.event.title),
                     subtitle: Text(session.event.location),
                     trailing: Text(
@@ -120,72 +162,71 @@ class _ReviewerSessionDetailsScreenState
                   ),
                 ),
 
-                const SizedBox(height: 24),
-
                 /// TRACK
                 if (session.track != null) ...[
-                  const Text(
-                    "Track",
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                  ),
-
-                  const SizedBox(height: 8),
-
-                  Chip(label: Text(session.track!.name)),
-
-                  const SizedBox(height: 24),
+                  sectionTitle("Track"),
+                  glassCard(child: _chip(session.track!.name, Colors.purple)),
                 ],
 
                 /// SPEAKERS
-                const Text(
-                  "Speakers",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-
-                const SizedBox(height: 8),
-
+                sectionTitle("Speakers"),
                 Column(
                   children:
                       session.sessionSpeakers.map((speaker) {
                         final profile = speaker.speakerProfile;
 
-                        return Card(
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  profile.profilePhotoUrl != null
-                                      ? NetworkImage(profile.profilePhotoUrl!)
-                                      : null,
-                              child:
-                                  profile.profilePhotoUrl == null
-                                      ? const Icon(Icons.person)
-                                      : null,
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 10),
+                          child: glassCard(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 24,
+                                  backgroundImage:
+                                      profile.profilePhotoUrl != null
+                                          ? NetworkImage(
+                                            profile.profilePhotoUrl!,
+                                          )
+                                          : null,
+                                  child:
+                                      profile.profilePhotoUrl == null
+                                          ? const Icon(Icons.person)
+                                          : null,
+                                ),
+                                const SizedBox(width: 12),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      profile.user.fullName,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      profile.organization,
+                                      style: TextStyle(color: Colors.grey[600]),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            title: Text(profile.user.fullName),
-                            subtitle: Text(profile.organization),
                           ),
                         );
                       }).toList(),
                 ),
 
-                const SizedBox(height: 24),
-
                 /// REVIEWS
-                const Text(
-                  "Reviews",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-                ),
-
-                const SizedBox(height: 8),
+                sectionTitle("Reviews"),
 
                 if (session.reviews.isEmpty) const Text("No reviews yet"),
 
                 Column(
                   children:
                       session.reviews.map((review) {
-                        return Card(
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: glassCard(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -205,33 +246,41 @@ class _ReviewerSessionDetailsScreenState
                                   ],
                                 ),
 
-                                const SizedBox(height: 6),
-
+                                const SizedBox(height: 8),
                                 Text(review.comment),
 
                                 if (review.aiAnalysis != null) ...[
-                                  const SizedBox(height: 10),
-                                  const Divider(),
+                                  const Divider(height: 20),
 
-                                  Text(
+                                  const Text(
                                     "AI Analysis",
                                     style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.grey[700],
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
 
                                   const SizedBox(height: 6),
 
-                                  Text("Depth: ${review.aiAnalysis!.depth}"),
-                                  Text(
-                                    "Clarity: ${review.aiAnalysis!.clarity}",
-                                  ),
-                                  Text(
-                                    "Novelty: ${review.aiAnalysis!.novelty}",
-                                  ),
-                                  Text(
-                                    "Overall: ${review.aiAnalysis!.overallScore}",
+                                  Wrap(
+                                    spacing: 10,
+                                    children: [
+                                      _chip(
+                                        "Depth: ${review.aiAnalysis!.depth}",
+                                        Colors.blue,
+                                      ),
+                                      _chip(
+                                        "Clarity: ${review.aiAnalysis!.clarity}",
+                                        Colors.green,
+                                      ),
+                                      _chip(
+                                        "Novelty: ${review.aiAnalysis!.novelty}",
+                                        Colors.purple,
+                                      ),
+                                      _chip(
+                                        "Overall: ${review.aiAnalysis!.overallScore}",
+                                        Colors.orange,
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ],
@@ -246,6 +295,20 @@ class _ReviewerSessionDetailsScreenState
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _chip(String text, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(color: color, fontWeight: FontWeight.w500),
       ),
     );
   }

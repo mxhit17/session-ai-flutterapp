@@ -270,7 +270,8 @@ class CTASection extends StatelessWidget {
       child: Column(
         children: [
           const Text(
-            "Launch your AI-driven event platform",
+            "Launch your\nAI-driven\nevent platform",
+            textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,

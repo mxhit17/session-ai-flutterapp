@@ -36,71 +36,60 @@ class _OrganizerEventDetailScreenState
     return DefaultTabController(
       length: 4,
       child: Scaffold(
-        appBar: AppBar(title: const Text("Event Management")),
+        backgroundColor: const Color(0xFFF7F9FC), // light clean bg
+        appBar: AppBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          foregroundColor: Colors.black,
+          title: const Text("Event Management"),
+        ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            /// 🚨 CFP WARNING BANNER
+            /// 🚨 CFP WARNING
             if (isCfpDatesMissing)
-              GestureDetector(
-                onTap: () async {
-                  final updated = await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CfpModifierScreen(event: event),
-                    ),
-                  );
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: GestureDetector(
+                  onTap: () async {
+                    final updated = await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CfpModifierScreen(event: event),
+                      ),
+                    );
 
-                  if (updated == true) {
-                    setState(() {
-                      event = GetEventsResponse(
-                        id: event.id,
-                        title: event.title,
-                        description: event.description,
-                        startDate: event.startDate,
-                        endDate: event.endDate,
-                        location: event.location,
-                        timezone: event.timezone,
-                        isPublic: event.isPublic,
-                        createdAt: event.createdAt,
-                        cfpOpen: !event.cfpOpen, // toggled
-                        cfpStart: event.cfpStart,
-                        cfpEnd: event.cfpEnd,
-                      );
-                    });
-                  }
-                },
-                child: Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.all(16),
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red),
-                  ),
-                  child: Row(
-                    children: const [
-                      Icon(Icons.warning_amber_rounded, color: Colors.red),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: Text(
-                          "CFP dates are not set. Tap here to configure CFP now.",
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontWeight: FontWeight.w600,
+                    if (updated == true) {
+                      setState(() {});
+                    }
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: Colors.orange.shade50,
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: Colors.orange.shade200),
+                    ),
+                    child: Row(
+                      children: const [
+                        Icon(Icons.warning_amber_rounded, color: Colors.orange),
+                        SizedBox(width: 10),
+                        Expanded(
+                          child: Text(
+                            "CFP dates are not set. Tap to configure.",
+                            style: TextStyle(fontWeight: FontWeight.w600),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
 
-            /// ===== EVENT HEADER =====
+            /// HEADER CARD
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: _EventHeader(
+              child: _ModernEventHeader(
                 title: event.title,
                 startDate: dateFormat.format(event.startDate),
                 endDate: dateFormat.format(event.endDate),
@@ -109,17 +98,19 @@ class _OrganizerEventDetailScreenState
               ),
             ),
 
-            /// ===== SCHEDULE ACTIONS =====
+            const SizedBox(height: 12),
+
+            /// ACTION BUTTONS
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
-                  /// VIEW SCHEDULE
                   Expanded(
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.calendar_month),
-                      label: const Text("View Schedule"),
-                      onPressed: () {
+                    child: _SoftButton(
+                      icon: Icons.calendar_month,
+                      label: "View Schedule",
+                      isPrimary: false,
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -130,15 +121,13 @@ class _OrganizerEventDetailScreenState
                       },
                     ),
                   ),
-
                   const SizedBox(width: 12),
-
-                  /// GENERATE SCHEDULE
                   Expanded(
-                    child: ElevatedButton.icon(
-                      icon: const Icon(Icons.auto_fix_high),
-                      label: const Text("Generate Schedule"),
-                      onPressed: () {
+                    child: _SoftButton(
+                      icon: Icons.auto_fix_high,
+                      label: "Generate",
+                      isPrimary: true,
+                      onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -155,14 +144,50 @@ class _OrganizerEventDetailScreenState
               ),
             ),
 
-            const TabBar(
-              tabs: [
-                Tab(text: "Tracks"),
-                Tab(text: "Rooms"),
-                Tab(text: "Reviewers"),
-                Tab(text: "Sessions"),
-              ],
+            const SizedBox(height: 12),
+
+            /// 🔥 IMPROVED TAB BAR
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF1F3F7), // soft background
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: TabBar(
+                dividerColor: Colors.transparent,
+                indicator: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(10, 4),
+                    ),
+                  ],
+                ),
+                indicatorPadding: const EdgeInsets.symmetric(
+                  // vertical: -2,
+                  horizontal: -14,
+                ),
+
+                labelColor: Colors.black,
+                unselectedLabelColor: Colors.grey.shade600,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+                tabs: const [
+                  Tab(text: "Tracks"),
+                  Tab(text: "Rooms"),
+                  Tab(text: "Reviewers"),
+                  Tab(text: "Sessions"),
+                ],
+              ),
             ),
+
+            const SizedBox(height: 10),
 
             Expanded(
               child: TabBarView(
@@ -170,7 +195,7 @@ class _OrganizerEventDetailScreenState
                   TracksTab(),
                   RoomsTab(),
                   ReviewersTab(eventId: widget.event.id),
-                  ReviewedSessionsTab(eventId: widget.event.id), // NEW
+                  ReviewedSessionsTab(eventId: widget.event.id),
                 ],
               ),
             ),
@@ -181,14 +206,15 @@ class _OrganizerEventDetailScreenState
   }
 }
 
-class _EventHeader extends StatelessWidget {
+/// ================= HEADER =================
+class _ModernEventHeader extends StatelessWidget {
   final String title;
   final String startDate;
   final String endDate;
   final String location;
   final bool isCfpOpen;
 
-  const _EventHeader({
+  const _ModernEventHeader({
     required this.title,
     required this.startDate,
     required this.endDate,
@@ -198,57 +224,51 @@ class _EventHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        /// Event Title
-        Text(
-          title,
-          style: Theme.of(
-            context,
-          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFE8F0FE), Color(0xFFF1F5FF)],
         ),
-        const SizedBox(height: 8),
-
-        /// Dates
-        Row(
-          children: [
-            const Icon(Icons.calendar_today, size: 18),
-            const SizedBox(width: 6),
-            Text("$startDate - $endDate"),
-          ],
-        ),
-        const SizedBox(height: 6),
-
-        /// Location
-        Row(
-          children: [
-            const Icon(Icons.location_on_outlined, size: 18),
-            const SizedBox(width: 6),
-            Text(location),
-          ],
-        ),
-        const SizedBox(height: 12),
-
-        /// CFP Badge
-        GestureDetector(
-          onTap: () async {
-            await Navigator.push(
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          /// TITLE
+          Text(
+            title,
+            style: Theme.of(
               context,
-              MaterialPageRoute(
-                builder:
-                    (_) => CfpModifierScreen(
-                      event:
-                          context
-                              .findAncestorWidgetOfExactType<
-                                OrganizerEventDetailScreen
-                              >()!
-                              .event,
-                    ),
-              ),
-            );
-          },
-          child: Container(
+            ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+          ),
+
+          const SizedBox(height: 10),
+
+          /// DATE
+          Row(
+            children: [
+              const Icon(Icons.calendar_today, size: 18),
+              const SizedBox(width: 6),
+              Text("$startDate - $endDate"),
+            ],
+          ),
+
+          const SizedBox(height: 6),
+
+          /// LOCATION
+          Row(
+            children: [
+              const Icon(Icons.location_on_outlined, size: 18),
+              const SizedBox(width: 6),
+              Expanded(child: Text(location)),
+            ],
+          ),
+
+          const SizedBox(height: 12),
+
+          /// CFP BADGE
+          Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
               color: isCfpOpen ? Colors.green.shade100 : Colors.red.shade100,
@@ -257,13 +277,57 @@ class _EventHeader extends StatelessWidget {
             child: Text(
               isCfpOpen ? "CFP Open" : "CFP Closed",
               style: TextStyle(
-                color: isCfpOpen ? Colors.green.shade800 : Colors.red.shade800,
                 fontWeight: FontWeight.w600,
+                color: isCfpOpen ? Colors.green.shade800 : Colors.red.shade800,
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// ================= BUTTON =================
+class _SoftButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isPrimary;
+  final VoidCallback onTap;
+
+  const _SoftButton({
+    required this.icon,
+    required this.label,
+    required this.isPrimary,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: isPrimary ? const Color(0xFF4F46E5) : Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(14),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: isPrimary ? Colors.white : Colors.black),
+              const SizedBox(width: 8),
+              Text(
+                label,
+                style: TextStyle(
+                  color: isPrimary ? Colors.white : Colors.black,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
     );
   }
 }

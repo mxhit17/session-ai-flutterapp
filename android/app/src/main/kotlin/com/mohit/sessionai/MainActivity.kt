@@ -1,4 +1,4 @@
-package com.example.sessionize
+package com.mohit.sessionai
 
 import io.flutter.embedding.android.FlutterActivity
 

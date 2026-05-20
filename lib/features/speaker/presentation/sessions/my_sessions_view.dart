@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:session.ai/features/speaker/data/speaker_repository.dart';
 import 'package:session.ai/features/speaker/models/my_sessions_response.dart';
+import 'package:session.ai/utils/widgets/ai_floating_button.dart';
 
 class MySessionsScreen extends StatefulWidget {
   const MySessionsScreen({super.key});
@@ -22,116 +23,181 @@ class _MySessionsScreenState extends State<MySessionsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<MySessionsResponse>>(
-      future: _sessionsFuture,
-      builder: (context, snapshot) {
-        /// Loading
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        }
+    return Scaffold(
+      body: Container(
+        color: const Color(0xFFF5F7FB), // light modern background
+        child: FutureBuilder<List<MySessionsResponse>>(
+          future: _sessionsFuture,
+          builder: (context, snapshot) {
+            /// Loading
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-        /// Error
-        if (snapshot.hasError) {
-          return Center(child: Text("Error: ${snapshot.error}"));
-        }
+            /// Error
+            if (snapshot.hasError) {
+              return Center(
+                child: Text(
+                  "Something went wrong",
+                  style: TextStyle(color: Colors.grey.shade700),
+                ),
+              );
+            }
 
-        final sessions = snapshot.data ?? [];
+            final sessions = snapshot.data ?? [];
 
-        /// Empty state
-        if (sessions.isEmpty) {
-          return const Center(child: Text("No sessions submitted yet."));
-        }
+            /// Empty state
+            if (sessions.isEmpty) {
+              return Center(
+                child: Text(
+                  "No sessions submitted yet",
+                  style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                ),
+              );
+            }
 
-        /// Success
-        return ListView.builder(
-          padding: const EdgeInsets.all(16),
-          itemCount: sessions.length,
-          itemBuilder: (context, index) {
-            final session = sessions[index];
+            /// Success
+            return ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: sessions.length,
+              itemBuilder: (context, index) {
+                final session = sessions[index];
 
-            return Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    /// Title
-                    Text(
-                      session.title,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 18),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    color: Colors.white.withOpacity(0.9),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 20,
+                        offset: const Offset(0, 10),
                       ),
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    /// Abstract
-                    Text(
-                      session.abstract,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    /// Event
-                    Row(
+                    ],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.event, size: 18),
-                        const SizedBox(width: 6),
-                        Text(session.event.title),
-                      ],
-                    ),
+                        /// Title + Status
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                session.title,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.titleMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ),
+                            _buildStatusChip(session.status),
+                          ],
+                        ),
 
-                    const SizedBox(height: 6),
+                        const SizedBox(height: 10),
 
-                    /// Date
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today, size: 18),
-                        const SizedBox(width: 6),
+                        /// Abstract
                         Text(
-                          DateFormat(
-                            'dd MMM yyyy',
-                          ).format(session.event.startDate),
+                          session.abstract,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.grey.shade700,
+                            height: 1.4,
+                          ),
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        /// Event & Date Row
+                        Row(
+                          children: [
+                            _infoTile(Icons.event, session.event.title),
+                            const SizedBox(width: 12),
+                            _infoTile(
+                              Icons.calendar_today,
+                              DateFormat(
+                                'dd MMM yyyy',
+                              ).format(session.event.startDate),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 12),
-
-                    /// Status
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: Chip(
-                        label: Text(session.status),
-                        backgroundColor: _getStatusColor(session.status),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+                );
+              },
             );
           },
-        );
-      },
+        ),
+      ),
+      floatingActionButton: AiFloatingButton(),
+
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniEndFloat,
+    );
+  }
+
+  Widget _infoTile(IconData icon, String text) {
+    return Expanded(
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEFF3FF),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, size: 16, color: Colors.blueAccent),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 13),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusChip(String status) {
+    final color = _getStatusColor(status);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 
   Color _getStatusColor(String status) {
     switch (status) {
       case "ACCEPTED":
-        return Colors.green.shade100;
+        return Colors.green;
       case "REJECTED":
-        return Colors.red.shade100;
+        return Colors.red;
       case "SUBMITTED":
-        return Colors.orange.shade100;
+        return Colors.orange;
       default:
-        return Colors.grey.shade200;
+        return Colors.grey;
     }
   }
 }

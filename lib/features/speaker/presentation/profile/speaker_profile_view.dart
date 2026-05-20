@@ -12,124 +12,56 @@ class SpeakerProfileScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(speakerProfileProvider);
     final uploadState = ref.watch(uploadImageProvider);
-    void _showSnack(BuildContext context, String message) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
-    }
-
-    Future<void> _pickAndUploadImage(
-      BuildContext context,
-      WidgetRef ref,
-    ) async {
-      try {
-        final picker = ImagePicker();
-
-        final picked = await picker.pickImage(
-          source: ImageSource.gallery,
-          imageQuality: 70,
-        );
-
-        if (picked == null) return;
-
-        final file = File(picked.path);
-
-        /// STEP 1: Upload image
-        final url = await ref.read(uploadImageProvider.notifier).upload(file);
-
-        if (url == null) {
-          _showSnack(context, "Image upload failed");
-          return;
-        }
-
-        /// STEP 2: Call PATCH API
-        await ref.read(updateSpeakerProfileProvider.notifier).updateField({
-          "profile_photo_url": url,
-        });
-
-        /// STEP 3: Refresh profile
-        ref.invalidate(speakerProfileProvider);
-
-        _showSnack(context, "Profile photo updated ✅");
-      } catch (e) {
-        _showSnack(context, "Something went wrong");
-      }
-    }
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FB),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error:
-            (e, _) => Center(
-              child: Text(
-                "Failed to load profile",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
+        error: (e, _) => const Center(child: Text("Failed to load profile")),
         data: (profile) {
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(speakerProfileProvider);
             },
             child: ListView(
-              padding: const EdgeInsets.all(20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               children: [
-                Center(
-                  child: GestureDetector(
-                    onTap: () => _pickAndUploadImage(context, ref),
-                    child: Stack(
-                      children: [
-                        uploadState is AsyncLoading
-                            ? const CircularProgressIndicator()
-                            : CircleAvatar(
-                              radius: 50,
-                              backgroundImage:
-                                  profile.profilePhotoUrl != null
-                                      ? NetworkImage(profile.profilePhotoUrl!)
-                                      : null,
-                              child:
-                                  profile.profilePhotoUrl == null
-                                      ? const Icon(Icons.person, size: 50)
-                                      : null,
-                            ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: const BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.blue,
-                            ),
-                            child: const Icon(
-                              Icons.camera_alt,
-                              size: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                _buildHeader(context, ref, profile, uploadState),
+                const SizedBox(height: 24),
+
+                _buildCard(
+                  child: Column(
+                    children: [
+                      _buildEditableTile(
+                        context,
+                        ref,
+                        "Experience Level",
+                        profile.experienceLevel,
+                        "experience_level",
+                      ),
+                      _divider(),
+                      _buildEditableTile(
+                        context,
+                        ref,
+                        "Organization",
+                        profile.organization,
+                        "organization",
+                      ),
+                      _divider(),
+                      _buildEditableTile(
+                        context,
+                        ref,
+                        "Bio",
+                        profile.bio,
+                        "bio",
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                _buildEditableTile(
-                  context,
-                  ref,
-                  "Experience Level",
-                  profile.experienceLevel,
-                  "experience_level",
-                ),
-                _buildEditableTile(
-                  context,
-                  ref,
-                  "Organization",
-                  profile.organization,
-                  "organization",
-                ),
-                _buildEditableTile(context, ref, "Bio", profile.bio, "bio"),
 
-                _buildTile("User ID", profile.userId),
+                const SizedBox(height: 20),
+
+                _buildCard(child: _buildTile("User ID", profile.userId)),
               ],
             ),
           );
@@ -138,27 +70,121 @@ class SpeakerProfileScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTile(String title, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.grey.shade100,
+  Widget _buildHeader(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic profile,
+    AsyncValue uploadState,
+  ) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [Color(0xFFE0EAFC), Color(0xFFCFDEF3)],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-            const SizedBox(height: 6),
-            Text(value),
-          ],
-        ),
+        borderRadius: BorderRadius.circular(20),
       ),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: () => _pickAndUploadImage(context, ref),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.white,
+                    backgroundImage:
+                        profile.profilePhotoUrl != null
+                            ? NetworkImage(profile.profilePhotoUrl!)
+                            : null,
+                    child:
+                        profile.profilePhotoUrl == null
+                            ? const Icon(
+                              Icons.person,
+                              size: 50,
+                              color: Colors.grey,
+                            )
+                            : null,
+                  ),
+                ),
+                if (uploadState is AsyncLoading)
+                  const CircularProgressIndicator(),
+                Positioned(
+                  bottom: 0,
+                  right: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blue,
+                    ),
+                    child: const Icon(
+                      Icons.camera_alt,
+                      size: 16,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            profile.organization.isNotEmpty
+                ? profile.organization
+                : "Your Profile",
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCard({required Widget child}) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _divider() => const Divider(height: 24);
+
+  Widget _buildTile(String title, String value) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Text(title, style: const TextStyle(fontWeight: FontWeight.w500)),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: const TextStyle(color: Colors.grey),
+          ),
+        ),
+      ],
     );
   }
 
@@ -169,41 +195,53 @@ class SpeakerProfileScreen extends ConsumerWidget {
     String value,
     String fieldKey,
   ) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.grey.shade100,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ),
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
+              const SizedBox(height: 4),
+              Text(
+                value.isEmpty ? "Not added" : value,
+                style: TextStyle(
+                  color: value.isEmpty ? Colors.grey : Colors.black87,
                 ),
-                IconButton(
-                  icon: const Icon(Icons.edit, size: 18),
-                  onPressed: () {
-                    _showEditBottomSheet(context, ref, title, value, fieldKey);
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(value.isEmpty ? "Not added" : value),
-          ],
+              ),
+            ],
+          ),
         ),
-      ),
+        IconButton(
+          icon: const Icon(Icons.edit, size: 18),
+          onPressed: () {
+            _showEditBottomSheet(context, ref, title, value, fieldKey);
+          },
+        ),
+      ],
     );
+  }
+
+  Future<void> _pickAndUploadImage(BuildContext context, WidgetRef ref) async {
+    final picker = ImagePicker();
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
+    if (picked == null) return;
+
+    final file = File(picked.path);
+
+    final url = await ref.read(uploadImageProvider.notifier).upload(file);
+
+    if (url == null) return;
+
+    await ref.read(updateSpeakerProfileProvider.notifier).updateField({
+      "profile_photo_url": url,
+    });
+
+    ref.invalidate(speakerProfileProvider);
   }
 
   void _showEditBottomSheet(
@@ -214,9 +252,7 @@ class SpeakerProfileScreen extends ConsumerWidget {
     String fieldKey,
   ) {
     final controller = TextEditingController(text: currentValue);
-
     String selectedExperience = currentValue;
-
     final experienceLevels = ['Beginner', 'Intermediate', 'Advanced'];
 
     showModalBottomSheet(
@@ -251,7 +287,6 @@ class SpeakerProfileScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: 20),
 
-                      /// 👇 EXPERIENCE LEVEL DROPDOWN
                       if (fieldKey == "experience_level")
                         DropdownButtonFormField<String>(
                           value:
@@ -268,24 +303,27 @@ class SpeakerProfileScreen extends ConsumerWidget {
                                   )
                                   .toList(),
                           onChanged: (value) {
-                            setState(() {
-                              selectedExperience = value!;
-                            });
+                            setState(() => selectedExperience = value!);
                           },
                           decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
                             ),
                           ),
                         )
-                      /// 👇 TEXT FIELD FOR BIO + ORGANIZATION
                       else
                         TextField(
                           controller: controller,
                           maxLines: fieldKey == "bio" ? 4 : 1,
                           decoration: InputDecoration(
+                            filled: true,
+                            fillColor: Colors.grey.shade100,
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(12),
+                              borderSide: BorderSide.none,
                             ),
                           ),
                         ),
@@ -295,6 +333,12 @@ class SpeakerProfileScreen extends ConsumerWidget {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                           onPressed:
                               updateState is AsyncLoading
                                   ? null
@@ -310,9 +354,7 @@ class SpeakerProfileScreen extends ConsumerWidget {
                                         )
                                         .updateField({fieldKey: valueToSend});
 
-                                    if (context.mounted) {
-                                      Navigator.pop(context);
-                                    }
+                                    if (context.mounted) Navigator.pop(context);
                                   },
                           child:
                               updateState is AsyncLoading
@@ -321,7 +363,6 @@ class SpeakerProfileScreen extends ConsumerWidget {
                                     width: 20,
                                     child: CircularProgressIndicator(
                                       strokeWidth: 2,
-                                      color: Colors.white,
                                     ),
                                   )
                                   : const Text("Save"),

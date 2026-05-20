@@ -1,5 +1,7 @@
 class ApiConstants {
-  static const String baseUrl = "http://localhost:3000/";
+  static const String baseUrlLocal = "http://localhost:3000/";
+  static const String baseUrlProd =
+      "https://session-ai-deployable-production.up.railway.app/";
 
   static const String events = "api/events";
   static const String auth = "users/";
