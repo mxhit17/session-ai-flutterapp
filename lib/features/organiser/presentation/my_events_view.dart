@@ -111,21 +111,12 @@ class _OrganizerEventsScreenState extends State<OrganizerEventsScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // /// 🔹 EVENT IMAGE
-                        // ClipRRect(
-                        //   borderRadius: BorderRadius.circular(14),
-                        //   child: Image.network(
-                        //     imageUrl,
-                        //     height: 140,
-                        //     width: double.infinity,
-                        //     fit: BoxFit.cover,
-                        //   ),
-                        // ),
                         Stack(
                           children: [
                             ClipRRect(
                               borderRadius: BorderRadius.circular(14),
                               child: Image.network(
-                                imageUrl,
+                                event.imageUrl ?? imageUrl,
                                 height: 140,
                                 width: double.infinity,
                                 fit: BoxFit.cover,
@@ -257,28 +248,100 @@ class _OrganizerEventsScreenState extends State<OrganizerEventsScreen> {
   }
 
   Future<void> _showDeleteDialog(String eventId) async {
+    final theme = Theme.of(context);
+
     final confirmed = await showDialog<bool>(
       context: context,
+      barrierDismissible: true,
       builder: (context) {
-        return AlertDialog(
+        return Dialog(
+          backgroundColor: theme.colorScheme.surface,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(28),
           ),
-          title: const Text("Delete Event"),
-          content: const Text("Are you sure you want to delete this event?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text("Cancel"),
+          elevation: 0,
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  height: 72,
+                  width: 72,
+                  decoration: BoxDecoration(
+                    color: Colors.redAccent.withOpacity(0.12),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.delete_outline_rounded,
+                    color: Colors.redAccent,
+                    size: 36,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                Text(
+                  "Delete Event?",
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                Text(
+                  "This action cannot be undone.\nAre you sure you want to permanently delete this event?",
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: Colors.grey.shade600,
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 28),
+
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          side: BorderSide(color: Colors.grey.shade300),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text("Cancel"),
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text(
+                          "Delete",
+                          style: TextStyle(fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
-              ),
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text("Delete"),
-            ),
-          ],
+          ),
         );
       },
     );
@@ -289,7 +352,21 @@ class _OrganizerEventsScreenState extends State<OrganizerEventsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Event deleted successfully")),
+          SnackBar(
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            backgroundColor: Colors.black87,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+            content: const Row(
+              children: [
+                Icon(Icons.check_circle_rounded, color: Colors.white),
+                SizedBox(width: 12),
+                Text("Event deleted successfully"),
+              ],
+            ),
+          ),
         );
       }
     }

@@ -31,7 +31,7 @@ class _OrganizerEventDetailScreenState
     final dateFormat = DateFormat('dd MMM yyyy');
 
     final bool isCfpDatesMissing =
-        widget.event.cfpStart == null || widget.event.cfpEnd == null;
+        event.cfpStart == null || event.cfpEnd == null;
 
     return DefaultTabController(
       length: 4,
@@ -52,6 +52,17 @@ class _OrganizerEventDetailScreenState
                 padding: const EdgeInsets.all(16),
                 child: GestureDetector(
                   onTap: () async {
+                    // final updated = await Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (_) => CfpModifierScreen(event: event),
+                    //   ),
+                    // );
+
+                    // if (updated == true) {
+                    //   setState(() {});
+                    // }
+
                     final updated = await Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -59,8 +70,14 @@ class _OrganizerEventDetailScreenState
                       ),
                     );
 
-                    if (updated == true) {
-                      setState(() {});
+                    if (updated != null) {
+                      setState(() {
+                        event = event.copyWith(
+                          cfpOpen: updated["cfpOpen"],
+                          cfpStart: updated["cfpStart"],
+                          cfpEnd: updated["cfpEnd"],
+                        );
+                      });
                     }
                   },
                   child: Container(
@@ -101,52 +118,91 @@ class _OrganizerEventDetailScreenState
             const SizedBox(height: 12),
 
             /// ACTION BUTTONS
+            /// ACTION BUTTONS
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Row(
+              child: Column(
                 children: [
-                  Expanded(
-                    child: _SoftButton(
-                      icon: Icons.calendar_month,
-                      label: "View Schedule",
-                      isPrimary: false,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => ScheduleScreen(eventId: widget.event.id),
-                          ),
-                        );
-                      },
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _SoftButton(
+                          icon: Icons.calendar_month,
+                          label: "View Schedule",
+                          isPrimary: false,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => ScheduleScreen(
+                                      eventId: widget.event.id,
+                                    ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _SoftButton(
+                          icon: Icons.auto_fix_high,
+                          label: "Generate",
+                          isPrimary: true,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => ScheduleBuilderScreen(
+                                      eventId: widget.event.id,
+                                    ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: _SoftButton(
-                      icon: Icons.auto_fix_high,
-                      label: "Generate",
-                      isPrimary: true,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (_) => ScheduleBuilderScreen(
-                                  eventId: widget.event.id,
-                                ),
-                          ),
-                        );
-                      },
+
+                  /// SHOW ONLY WHEN CFP DATES ARE MISSING
+                  if (!isCfpDatesMissing) ...[
+                    const SizedBox(height: 12),
+
+                    SizedBox(
+                      width: double.infinity,
+                      child: _SoftButton(
+                        icon: Icons.edit_calendar_rounded,
+                        label: "Configure CFP Dates",
+                        isPrimary: true,
+                        onTap: () async {
+                          final updated = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CfpModifierScreen(event: event),
+                            ),
+                          );
+
+                          if (updated != null) {
+                            setState(() {
+                              event = event.copyWith(
+                                cfpOpen: updated["cfpOpen"],
+                                cfpStart: updated["cfpStart"],
+                                cfpEnd: updated["cfpEnd"],
+                              );
+                            });
+                          }
+                        },
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
             ),
 
             const SizedBox(height: 12),
 
-            /// 🔥 IMPROVED TAB BAR
+            /// IMPROVED TAB BAR
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               padding: const EdgeInsets.all(6),

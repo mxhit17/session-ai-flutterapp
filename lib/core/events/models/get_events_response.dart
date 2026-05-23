@@ -8,10 +8,10 @@ class GetEventsResponse {
   final String timezone;
   final bool isPublic;
   final DateTime createdAt;
-
   final bool cfpOpen;
   final DateTime? cfpStart;
   final DateTime? cfpEnd;
+  final String? imageUrl;
 
   GetEventsResponse({
     required this.id,
@@ -26,7 +26,40 @@ class GetEventsResponse {
     required this.cfpOpen,
     this.cfpStart,
     this.cfpEnd,
+    this.imageUrl,
   });
+
+  GetEventsResponse copyWith({
+    String? id,
+    String? title,
+    String? description,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? location,
+    String? timezone,
+    bool? isPublic,
+    DateTime? createdAt,
+    bool? cfpOpen,
+    DateTime? cfpStart,
+    DateTime? cfpEnd,
+    String? imageUrl,
+  }) {
+    return GetEventsResponse(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      location: location ?? this.location,
+      timezone: timezone ?? this.timezone,
+      isPublic: isPublic ?? this.isPublic,
+      createdAt: createdAt ?? this.createdAt,
+      cfpOpen: cfpOpen ?? this.cfpOpen,
+      cfpStart: cfpStart ?? this.cfpStart,
+      cfpEnd: cfpEnd ?? this.cfpEnd,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
 
   factory GetEventsResponse.fromJson(Map<String, dynamic> json) {
     return GetEventsResponse(
@@ -43,6 +76,7 @@ class GetEventsResponse {
       cfpStart:
           json['cfp_start'] != null ? DateTime.parse(json['cfp_start']) : null,
       cfpEnd: json['cfp_end'] != null ? DateTime.parse(json['cfp_end']) : null,
+      imageUrl: json['image_url'],
     );
   }
 
@@ -57,9 +91,10 @@ class GetEventsResponse {
       "timezone": timezone,
       "is_public": isPublic,
       "created_at": createdAt.toIso8601String(),
-      'cfp_open': cfpOpen,
-      'cfp_start': cfpStart?.toIso8601String(),
-      'cfp_end': cfpEnd?.toIso8601String(),
+      "cfp_open": cfpOpen,
+      "cfp_start": cfpStart?.toIso8601String(),
+      "cfp_end": cfpEnd?.toIso8601String(),
+      "image_url": imageUrl,
     };
   }
 }

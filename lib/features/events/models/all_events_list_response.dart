@@ -22,6 +22,7 @@ class Event {
   final String timezone;
   final DateTime createdAt;
   final bool cfpOpen;
+  final String? imageUrl;
   final DateTime? cfpStart;
   final DateTime? cfpEnd;
 
@@ -35,6 +36,7 @@ class Event {
     required this.timezone,
     required this.createdAt,
     required this.cfpOpen,
+    this.imageUrl,
     this.cfpStart,
     this.cfpEnd,
   });
@@ -50,6 +52,7 @@ class Event {
       timezone: json['timezone'],
       createdAt: DateTime.parse(json['created_at']),
       cfpOpen: json['cfp_open'] ?? false,
+      imageUrl: json['image_url'], // added
       cfpStart:
           json['cfp_start'] != null ? DateTime.parse(json['cfp_start']) : null,
       cfpEnd: json['cfp_end'] != null ? DateTime.parse(json['cfp_end']) : null,
@@ -67,6 +70,7 @@ class Event {
       'timezone': timezone,
       'created_at': createdAt.toIso8601String(),
       'cfp_open': cfpOpen,
+      'image_url': imageUrl, // added
       'cfp_start': cfpStart?.toIso8601String(),
       'cfp_end': cfpEnd?.toIso8601String(),
     };

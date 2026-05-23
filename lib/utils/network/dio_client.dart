@@ -1,3 +1,5 @@
+import 'dart:developer' as developer show log;
+
 import 'package:dio/dio.dart';
 import 'package:session.ai/injection_container.dart';
 import 'package:session.ai/utils/storage/preference_manager.dart';
@@ -31,6 +33,7 @@ class DioClient {
           if (storedToken != null && storedToken != '') {
             token = storedToken;
           }
+          developer.log("{Token : $token}");
           options.headers.addAll({'Authorization': 'Bearer $token'});
           return handler.next(options);
         },

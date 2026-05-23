@@ -1,18 +1,23 @@
+import 'dart:developer' as developer show log;
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:session.ai/core/events/models/get_events_response.dart';
+import 'package:session.ai/core/upload_images/upload_provider.dart';
 import 'package:session.ai/features/organiser/data/organiser_repository.dart';
 import 'package:session.ai/features/speaker/data/speaker_repository.dart';
 
-class CreateEventScreen extends StatefulWidget {
+class CreateEventScreen extends ConsumerStatefulWidget {
   final GetEventsResponse? existingEvent;
 
   const CreateEventScreen({super.key, this.existingEvent});
   @override
-  State<CreateEventScreen> createState() => _CreateEventScreenState();
+  ConsumerState<CreateEventScreen> createState() => _CreateEventScreenState();
 }
 
-class _CreateEventScreenState extends State<CreateEventScreen> {
+class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final TextEditingController _titleController = TextEditingController();
@@ -25,6 +30,10 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
   DateTimeRange? _selectedDateRange;
   String _selectedTimezone = "Asia/Kolkata";
+
+  File? _selectedImageFile;
+  String? _uploadedImageUrl;
+  bool _isUploadingImage = false;
 
   @override
   void initState() {
@@ -41,6 +50,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         start: event.startDate,
         end: event.endDate,
       );
+
+      _uploadedImageUrl = event.imageUrl;
     }
   }
 
@@ -139,6 +150,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       "end_date": formatDate(_selectedDateRange!.end),
       "location": _locationController.text.trim(),
       "timezone": _selectedTimezone,
+      "image_url": _uploadedImageUrl,
     };
 
     try {
@@ -174,6 +186,48 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       ).showSnackBar(SnackBar(content: Text(e.toString())));
     } finally {
       if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _pickAndUploadImage() async {
+    final picker = ImagePicker();
+
+    final picked = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 70,
+    );
+
+    if (picked == null) return;
+
+    setState(() {
+      _isUploadingImage = true;
+      _selectedImageFile = File(picked.path);
+    });
+
+    try {
+      final url = await ref
+          .read(uploadImageProvider.notifier)
+          .upload(_selectedImageFile!);
+
+      developer.log("This is the url : " + url.toString());
+
+      if (url != null) {
+        setState(() {
+          _uploadedImageUrl = url;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Image uploaded successfully")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
+      setState(() {
+        _isUploadingImage = false;
+      });
     }
   }
 
@@ -221,6 +275,47 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                   ),
                   child: Column(
                     children: [
+                      GestureDetector(
+                        onTap: _isUploadingImage ? null : _pickAndUploadImage,
+                        child: Container(
+                          height: 200,
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            borderRadius: BorderRadius.circular(16),
+                            border: Border.all(color: Colors.grey.shade300),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(16),
+                            child:
+                                _isUploadingImage
+                                    ? const Center(
+                                      child: CircularProgressIndicator(),
+                                    )
+                                    : _selectedImageFile != null
+                                    ? Image.file(
+                                      _selectedImageFile!,
+                                      fit: BoxFit.cover,
+                                    )
+                                    : _uploadedImageUrl != null
+                                    ? Image.network(
+                                      _uploadedImageUrl!,
+                                      fit: BoxFit.cover,
+                                    )
+                                    : Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: const [
+                                        Icon(Icons.image_outlined, size: 50),
+                                        SizedBox(height: 10),
+                                        Text("Tap to upload event image"),
+                                      ],
+                                    ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
                       _buildInput(
                         controller: _titleController,
                         label: "Event Title",

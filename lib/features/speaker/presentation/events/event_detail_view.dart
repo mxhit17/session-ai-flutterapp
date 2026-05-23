@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:session.ai/features/events/models/all_events_list_response.dart';
+import 'package:session.ai/features/organiser/presentation/my_events_view.dart';
 import 'package:session.ai/features/speaker/presentation/events/submit_session_screen.dart';
 
 class EventDetailScreen extends StatelessWidget {
@@ -52,6 +53,46 @@ class EventDetailScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Builder(
+                      builder: (context) {
+                        final imageToShow =
+                            (event.imageUrl != null &&
+                                    event.imageUrl!.isNotEmpty)
+                                ? event.imageUrl!
+                                : randomImages[event.title.hashCode %
+                                    randomImages.length];
+
+                        return Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(14),
+                              child: AspectRatio(
+                                aspectRatio: 16 / 9,
+                                child: Image.network(
+                                  imageToShow,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (_, __, ___) {
+                                    return Container(
+                                      color: Colors.grey.shade200,
+                                      alignment: Alignment.center,
+                                      child: const Icon(
+                                        Icons.broken_image,
+                                        color: Colors.grey,
+                                        size: 40,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 18),
+                          ],
+                        );
+                      },
+                    ),
+
                     Text(
                       event.title,
                       style: const TextStyle(
@@ -59,6 +100,7 @@ class EventDetailScreen extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+
                     const SizedBox(height: 12),
 
                     Row(

@@ -72,7 +72,11 @@ class _CfpModifierScreenState extends State<CfpModifierScreen> {
           const SnackBar(content: Text("CFP updated successfully")),
         );
 
-        Navigator.pop(context, true);
+        Navigator.pop(context, {
+          "cfpOpen": _cfpOpen,
+          "cfpStart": _cfpStart,
+          "cfpEnd": _cfpEnd,
+        });
       }
     } catch (e) {
       ScaffoldMessenger.of(

@@ -1,13 +1,13 @@
 class CreateEventResponse {
   final Event event;
-  final String? token; // Nullable as requested
+  final String? token;
 
   CreateEventResponse({required this.event, this.token});
 
   factory CreateEventResponse.fromJson(Map<String, dynamic> json) {
     return CreateEventResponse(
       event: Event.fromJson(json['event']),
-      token: json['token'], // can be null
+      token: json['token'],
     );
   }
 
@@ -24,11 +24,14 @@ class Event {
   final DateTime endDate;
   final String location;
   final String timezone;
+
+  final String? imageUrl;
+
   final bool isPublic;
   final String createdBy;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final DateTime? deletedAt; // nullable
+  final DateTime? deletedAt;
 
   Event({
     required this.id,
@@ -38,6 +41,9 @@ class Event {
     required this.endDate,
     required this.location,
     required this.timezone,
+
+    this.imageUrl,
+
     required this.isPublic,
     required this.createdBy,
     required this.createdAt,
@@ -54,6 +60,9 @@ class Event {
       endDate: DateTime.parse(json['end_date']),
       location: json['location'],
       timezone: json['timezone'],
+
+      imageUrl: json['image_url'],
+
       isPublic: json['is_public'],
       createdBy: json['created_by'],
       createdAt: DateTime.parse(json['created_at']),
@@ -74,6 +83,9 @@ class Event {
       'end_date': endDate.toIso8601String(),
       'location': location,
       'timezone': timezone,
+
+      'image_url': imageUrl,
+
       'is_public': isPublic,
       'created_by': createdBy,
       'created_at': createdAt.toIso8601String(),

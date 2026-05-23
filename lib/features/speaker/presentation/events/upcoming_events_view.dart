@@ -37,23 +37,6 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF7F9FC),
-      // floatingActionButton: FloatingActionButton.extended(
-      //   elevation: 4,
-      //   backgroundColor: Colors.blueAccent,
-      //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      //   onPressed: () async {
-      //     await Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (_) => const CreateEventScreen()),
-      //     );
-      //     _refresh();
-      //   },
-      //   icon: const Icon(Icons.add, color: Colors.white),
-      //   label: const Text(
-      //     "Create Event",
-      //     style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
-      //   ),
-      // ),
       floatingActionButton: SizedBox(
         width: 170,
         height: 140,
@@ -166,7 +149,7 @@ class _UpcomingEventsScreenState extends State<UpcomingEventsScreen> {
                                 top: Radius.circular(20),
                               ),
                               child: Image.network(
-                                imageUrl,
+                                event.imageUrl ?? imageUrl,
                                 height: 190,
                                 width: double.infinity,
                                 fit: BoxFit.cover,

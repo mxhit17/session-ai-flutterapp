@@ -68,4 +68,6 @@ class ApiConstants {
       "/events/$eventId/schedule/day/$date";
 
   static String upload = "upload";
+
+  static const String aiChat = "/ai/chat";
 }
